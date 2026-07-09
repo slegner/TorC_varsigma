@@ -1,0 +1,24 @@
+[project]
+name = "torc"
+version = "0.1.0"
+description = "TorC (torsion-condensate) background cosmology vs DESI DR2 BAO, in JAX"
+requires-python = ">=3.11"
+dependencies = [
+    "jax",
+    "diffrax",
+    "optimistix",
+    "numpy",
+    "scipy",
+    "pandas",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+sampling = ["blackjax", "anesthetic", "tqdm", "fgivenx"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["torc"]
