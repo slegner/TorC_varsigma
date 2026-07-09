@@ -48,7 +48,8 @@ plt.rcParams.update({
 })
 
 # --- DESI DR2 data -----------------------------------------------------------
-_dd = os.path.join(here, "..", "..", "desidr2")
+_dd = os.environ.get("DESIDR2_DIR",
+                     os.path.join(here, "..", "data", "desidr2"))
 data      = read_csv(os.path.join(_dd, "desidr2_mean.txt"),
                      header=None, index_col=None, sep=r"\s+", comment="#")
 cov       = np.loadtxt(os.path.join(_dd, "desidr2_cov.txt"))

@@ -52,7 +52,8 @@ CUSTOM_CMAP = LinearSegmentedColormap.from_list(
     "custom_cmap", ["#785EF0", "#DC267F", "#FFB000"], N=256)
 
 # --- DESI DR2 data ------------------------------------------------------------
-_dd = os.path.join(TORC, "..", "desidr2")
+_dd = os.environ.get("DESIDR2_DIR",
+                     os.path.join(TORC, "data", "desidr2"))
 data      = read_csv(os.path.join(_dd, "desidr2_mean.txt"),
                      header=None, index_col=None, sep=r"\s+", comment="#")
 cov       = np.loadtxt(os.path.join(_dd, "desidr2_cov.txt"))

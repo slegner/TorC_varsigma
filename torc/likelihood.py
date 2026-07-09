@@ -24,12 +24,13 @@ C_KMS  = 299792.458
 OMEGAR = OMEGA_R_DEFAULT          # 8.24e-5, as everywhere in distances/
 
 # ---------------------------------------------------------------------------
-# Data (host side, once, at import).  Default location: ../../desidr2
-# relative to this package (distances/desidr2); override with $DESIDR2_DIR.
+# Data (host side, once, at import).  Vendored in the repo at data/desidr2;
+# override with $DESIDR2_DIR.
 # ---------------------------------------------------------------------------
 _here = os.environ.get(
     "DESIDR2_DIR",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "desidr2"))
+    os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                 "..", "data", "desidr2"))
 _data = read_csv(os.path.join(_here, "desidr2_mean.txt"),
                  header=None, index_col=None, sep=r"\s+", comment="#")
 _cov  = np.loadtxt(os.path.join(_here, "desidr2_cov.txt"))

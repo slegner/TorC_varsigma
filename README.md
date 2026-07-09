@@ -36,22 +36,6 @@ equations and *today* is defined as the moment a = 1; E(z) = H/H(a=1).
 No value of H0 is assumed anywhere — the single dimensionful quantity is
 the sampled product `h0rd` = H0·r_d [km/s].
 
-Consequences:
-- `omega_m` / `OmL` are **not** today's density fractions under this
-  convention (they are the fractions at the never-visited epoch where
-  H_code = 100); fitted values are not directly comparable to DESI's Ωm.
-- The previous convention (today located dynamically where the input
-  fractions hold, via a da = 100 event) is archived in
-  `legacy/H0_renorm/theory_jax.py`; `chains/torc_ns.npz` was produced with
-  it. The two anchorings coincide exactly for flat parameter combinations.
-- `mups2` (−υ₂) is an **exact background gauge parameter** (it rescales the
-  field's internal clock, τ → √mups2·τ); E(z) is provably independent of
-  it and background data cannot constrain it. It is kept in the interface
-  for perturbation-level work. NOTE: the `P_deriveda0`/`rho_deriveda0`
-  expressions in `torc/scipy_reference.py` are *not* mups2-invariant even
-  though w = P/ρ should be — pending re-derivation; treat w_DE panels and
-  anything handing that fluid to CAMB with care.
-
 ## Quickstart
 
 ```bash
@@ -62,7 +46,7 @@ python scripts/run_ns.py               # exploration run, ~15 min on CPU
 python scripts/plot_corner.py          # corner plot -> plots/
 ```
 
-Data are read from `../../desidr2` (override with `$DESIDR2_DIR`).
+Data are vendored in `data/desidr2/` (override with `$DESIDR2_DIR`).
 Dependencies: jax, diffrax, optimistix, blackjax (handley-lab fork with
 `nss`), anesthetic, fgivenx, scipy, pandas, matplotlib.
 
