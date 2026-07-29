@@ -68,6 +68,12 @@ def run(label):
                       logL=np.asarray(dead.loglikelihood),
                       logL_birth=np.asarray(dead.loglikelihood_birth))
     lz = s.logZ(1000)
+    out = os.path.join(HERE, "..", "chains", f"torc_ns_{label}.npz")
+    np.savez(out, logL=np.asarray(dead.loglikelihood),
+             logL_birth=np.asarray(dead.loglikelihood_birth),
+             logZ=float(lz.mean()),
+             **{kk: np.asarray(v) for kk, v in dead.particles.items()})
+    print(f"    saved -> chains/torc_ns_{label}.npz", flush=True)
     return dict(label=label, init=t_init, run=t_run, calls=n,
                 lnZ=float(lz.mean()), err=float(lz.std()),
                 D_KL=float(s.D_KL()),
