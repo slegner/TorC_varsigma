@@ -12,7 +12,19 @@ here     = os.path.dirname(os.path.abspath(__file__))
 CHAINS   = os.path.join(here, "..", "chains")
 PLOT_DIR = os.path.join(here, "..", "plots")
 
-PARAMS = ["omega_m", "h0rd", "stigma", "mups2", "OmL"]
+# mups2 is absent from chains produced with SAMPLE_MUPS2 = False;
+# keep only the parameters the chain actually contains.
+_ALL_PARAMS = ["omega_m", "h0rd", "stigma", "mups2", "OmL"]
+
+
+def _available(chain_file):
+    """Parameters actually present in a chain (mups2 is missing from runs
+    made with SAMPLE_MUPS2 = False)."""
+    d = np.load(os.path.join(CHAINS, chain_file))
+    return [p for p in _ALL_PARAMS if p in d.files]
+
+
+PARAMS = _available("torc_ns_inner25.npz")
 LABELS = {
     "omega_m": r"$\Omega_\mathrm{m}$",
     "h0rd":    r"$H_0 r_\mathrm{d}$ [km/s]",

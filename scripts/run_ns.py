@@ -3,10 +3,15 @@
 Usage:  python scripts/run_ns.py            (from the repo root)
 Writes chains/torc_ns_noH0.npz and prints logZ / ESS / posterior summary.
 
+Samples 4 parameters (omega_m, h0rd, stigma, OmL).  mups2 is an exact
+background gauge parameter and is FIXED at 4/3 by default -- see the
+torc/priors.py docstring for the justification, and set SAMPLE_MUPS2 = True
+there to restore it (required for perturbation-level observables).
+
 Knobs (see the blackjax-nss guidance): NUM_LIVE 250 = exploration,
-1000+ = publication.  mups2 is an exact background gauge parameter and can
-be fixed without loss for BAO-only runs (drop it from PRIOR_BOUNDS in
-torc/priors.py and from the theory call to sample 4 parameters).
+1000+ = publication.  NUM_INNER_STEPS follows 5*ndim; halving it was
+validated to leave the posterior unchanged for a 1.77x speedup (see
+benchmarks/tune_num_inner_steps.py).
 """
 import sys, os, time
 import numpy as np
