@@ -1,0 +1,142 @@
+
+======================================================================================
+POINT: fiducial   {'omega_m': 0.3, 'stigma': 1.5, 'mups2': 1.5, 'OmL': 0.7}
+======================================================================================
+solver                    tol        ms  steps/nfev   max|dE/E|  note
+  dfx Tsit5 (current)   1e-05     1.815          68    7.48e-06
+  dfx Dopri5            1e-05     1.268          76    3.27e-06
+  dfx Dopri8            1e-05     1.646          34    8.20e-07
+  dfx Bosh3             1e-05     1.954         203    2.81e-04
+  dfx Heun              1e-05     6.712        2004    4.10e-04
+  dfx Ralston           1e-05     6.816        1963    5.18e-04
+  dfx Kvaerno3 [stiff]  1e-05   427.116        9357    7.23e-06
+  dfx Kvaerno5 [stiff]  1e-05   868.546       13493    1.53e-05
+  dfx KenCarp4 [stiff]  1e-05         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-05    15.004         488    2.47e-06
+  spy RK23              1e-05    21.952         590    2.72e-04
+  spy DOP853            1e-05    13.957         530    7.75e-07
+  spy Radau             1e-05   137.620        2479    2.73e-06
+  spy BDF               1e-05    70.660         727    6.87e-03
+  spy LSODA             1e-05    24.724         841    7.41e-03
+  dfx Tsit5 (current)   1e-08     3.276         249    4.53e-09
+  dfx Dopri5            1e-08     2.798         270    4.56e-09
+  dfx Dopri8            1e-08     1.827          72    2.08e-09
+  dfx Bosh3             1e-08    11.228        1523    1.44e-06
+  dfx Heun              1e-08   172.679       56067    3.14e-06
+  dfx Ralston           1e-08   171.031       55775    3.95e-06
+  dfx Kvaerno3 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx Kvaerno5 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx KenCarp4 [stiff]  1e-08         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-08    51.541        1748    5.84e-09
+  spy RK23              1e-08   148.422        4667    1.28e-06
+  spy DOP853            1e-08    36.234        1388    6.98e-10
+  spy Radau             1e-08   437.425        8157    2.69e-09
+  spy BDF               1e-08   380.420        3797    1.29e-04
+  spy LSODA             1e-08   119.843        4692    2.35e-04
+
+======================================================================================
+POINT: slow ridge   {'omega_m': 0.9555, 'stigma': 1.1926, 'mups2': 0.6794, 'OmL': 0.4868}
+======================================================================================
+solver                    tol        ms  steps/nfev   max|dE/E|  note
+  dfx Tsit5 (current)   1e-05     1.787          80    4.00e-06
+  dfx Dopri5            1e-05     1.340          87    3.70e-06
+  dfx Dopri8            1e-05     1.586          33    3.38e-06
+  dfx Bosh3             1e-05     2.135         238    4.00e-04
+  dfx Heun              1e-05     8.434        2589    4.90e-04
+  dfx Ralston           1e-05     8.234        2554    6.19e-04
+  dfx Kvaerno3 [stiff]  1e-05   426.273        9626    1.19e-05
+  dfx Kvaerno5 [stiff]  1e-05   925.796       13862    6.86e-07
+  dfx KenCarp4 [stiff]  1e-05         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-05    16.134         530    2.86e-06
+  spy RK23              1e-05    25.151         671    3.93e-04
+  spy DOP853            1e-05    14.385         533    9.96e-07
+  spy Radau             1e-05   189.638        2456    2.40e-06
+  spy BDF               1e-05    74.182         720    7.63e-03
+  spy LSODA             1e-05    25.341         850    7.20e-03
+  dfx Tsit5 (current)   1e-08     3.761         269    1.05e-08
+  dfx Dopri5            1e-08     3.361         300    5.98e-09
+  dfx Dopri8            1e-08     2.288          77    2.94e-09
+  dfx Bosh3             1e-08    13.810        1815    1.90e-06
+  dfx Heun              1e-08   233.688       74574    3.48e-06
+  dfx Ralston           1e-08   237.113       74375    4.35e-06
+  dfx Kvaerno3 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx Kvaerno5 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx KenCarp4 [stiff]  1e-08         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-08    81.205        1868    3.97e-09
+  spy RK23              1e-08   229.393        5540    1.67e-06
+  spy DOP853            1e-08    46.640        1406    1.05e-09
+  spy Radau             1e-08   428.782        6528    4.37e-09
+  spy BDF               1e-08   482.653        4203    1.30e-04
+  spy LSODA             1e-08    98.600        2916    2.92e-04
+
+======================================================================================
+POINT: stigma low   {'omega_m': 0.5, 'stigma': 1.0001, 'mups2': 1.5, 'OmL': 0.7}
+======================================================================================
+solver                    tol        ms  steps/nfev   max|dE/E|  note
+  dfx Tsit5 (current)   1e-05     2.954          62    4.03e-04
+  dfx Dopri5            1e-05     2.021          63    7.08e-04
+  dfx Dopri8            1e-05     2.826          32    4.56e-04
+  dfx Bosh3             1e-05     3.174         177    2.48e-04
+  dfx Heun              1e-05    14.717        2298    2.75e-04
+  dfx Ralston           1e-05    14.359        2288    2.99e-04
+  dfx Kvaerno3 [stiff]  1e-05   151.518        1536    3.10e-04
+  dfx Kvaerno5 [stiff]  1e-05   260.316        1674    4.48e-04
+  dfx KenCarp4 [stiff]  1e-05         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-05    40.448         392    1.40e-04
+  spy RK23              1e-05    42.165         497    6.71e-04
+  spy DOP853            1e-05    26.987         449    4.39e-03
+  spy Radau             1e-05   147.471         921    2.58e-04
+  spy BDF               1e-05   123.095         514    1.05e-03
+  spy LSODA             1e-05    33.152         435    4.29e-03
+  dfx Tsit5 (current)   1e-08     6.534         207    8.23e-04
+  dfx Dopri5            1e-08     5.424         214    4.25e-04
+  dfx Dopri8            1e-08     6.504         105    5.17e-04
+  dfx Bosh3             1e-08    25.581        1590    4.30e-04
+  dfx Heun              1e-08   635.156       70693    4.51e-04
+  dfx Ralston           1e-08   632.889       70759    4.55e-04
+  dfx Kvaerno3 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx Kvaerno5 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx KenCarp4 [stiff]  1e-08         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-08   192.327        1346    6.37e-05
+  spy RK23              1e-08   765.075        4847    1.10e-05
+  spy DOP853            1e-08   176.705        1682    4.48e-04
+  spy Radau             1e-08  1875.849        9968    8.27e-05
+  spy BDF               1e-08  2785.754        8946    3.83e-05
+  spy LSODA             1e-08    86.058         632    1.02e-04
+
+======================================================================================
+POINT: stigma high   {'omega_m': 0.2, 'stigma': 2.9, 'mups2': 2.5, 'OmL': 1.2}
+======================================================================================
+solver                    tol        ms  steps/nfev   max|dE/E|  note
+  dfx Tsit5 (current)   1e-05     6.276          67    3.93e-06
+  dfx Dopri5            1e-05     4.171          76    4.34e-06
+  dfx Dopri8            1e-05     4.047          33    6.97e-07
+  dfx Bosh3             1e-05     5.608         188    3.25e-04
+  dfx Heun              1e-05    19.108        1824    7.08e-04
+  dfx Ralston           1e-05    16.929        1769    9.07e-04
+  dfx Kvaerno3 [stiff]  1e-05  1618.785       13454    1.65e-05
+  dfx Kvaerno5 [stiff]  1e-05  3507.085       23153    6.21e-07
+  dfx KenCarp4 [stiff]  1e-05         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-05    32.179         494    3.47e-06
+  spy RK23              1e-05    52.406         542    3.05e-04
+  spy DOP853            1e-05    30.836         503    6.96e-06
+  spy Radau             1e-05   333.979        2507    3.48e-06
+  spy BDF               1e-05   140.158         614    1.25e-02
+  spy LSODA             1e-05    49.859         769    1.01e-02
+  dfx Tsit5 (current)   1e-08     6.308         225    4.78e-09
+  dfx Dopri5            1e-08     7.276         254    1.15e-08
+  dfx Dopri8            1e-08     4.352          73    3.96e-09
+  dfx Bosh3             1e-08    17.377        1352    1.71e-06
+  dfx Heun              1e-08   325.592       49947    5.88e-06
+  dfx Ralston           1e-08   307.998       49287    7.47e-06
+  dfx Kvaerno3 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx Kvaerno5 [stiff]  1e-08         -           -           -  FAILED (diffrax._solution.RESULTS<The maximum number of solver steps was reached. Try increasing `max_steps`.>)
+  dfx KenCarp4 [stiff]  1e-08         -           -           -  compile fail: TermAndSolverIncompatible
+  spy RK45              1e-08    87.903        1652    6.68e-09
+  spy RK23              1e-08   244.811        4178    1.53e-06
+  spy DOP853            1e-08    62.936        1367    1.41e-09
+  spy Radau             1e-08   617.211        6561    3.39e-09
+  spy BDF               1e-08   771.493        4549    2.53e-04
+  spy LSODA             1e-08   213.173        5187    3.65e-04
+
+BENCHMARK DONE

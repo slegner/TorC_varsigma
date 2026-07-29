@@ -6,3 +6,6 @@ nohup.out
 legacy/
 .*.swp
 diagnostics/*.npz
+benchmarks/torc_rhs.jl
+benchmarks/reference_E.npz
+benchmarks/julia_E.tsv

@@ -1,0 +1,9 @@
+case          solver                    tol        ms     nfev   maxrelerr
+fiducial      cvode ADAMS             1e-05    11.230      n/a   5.334e-03
+fiducial      cvode BDF [stiff]       1e-05    11.415      n/a   8.426e-03
+fiducial      cvode ADAMS             1e-08    23.827      n/a   5.238e-05
+fiducial      cvode BDF [stiff]       1e-08    19.942      n/a   3.957e-05
+slow ridge    cvode ADAMS             1e-05    12.481      n/a   4.631e-03
+slow ridge    cvode BDF [stiff]       1e-05    12.477      n/a   9.113e-03
+slow ridge    cvode ADAMS             1e-08    26.403      n/a   4.890e-05
+slow ridge    cvode BDF [stiff]       1e-08    22.552      n/a   5.797e-05
