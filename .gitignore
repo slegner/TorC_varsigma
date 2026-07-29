@@ -5,3 +5,4 @@ nohup.out
 *.egg-info/
 legacy/
 .*.swp
+diagnostics/*.npz
