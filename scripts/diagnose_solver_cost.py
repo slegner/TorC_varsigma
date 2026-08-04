@@ -41,7 +41,8 @@ import diffrax
 from torc.theory import (aseries, cpseries, aseriesp, cpseriesp, small,
                           _TERM_LNA, _SOLVER, _CTRL, Z_SPLIT, N_EARLY, N_LATE,
                           OMEGA_R_DEFAULT)
-from torc.priors import PRIOR_BOUNDS, _SAFE, sample_prior
+from torc.priors import (PRIOR_BOUNDS, _ALL_BOUNDS, _SAFE,
+                         MUPS2_FIXED, sample_prior)
 
 import matplotlib
 matplotlib.use("Agg")
@@ -109,8 +110,8 @@ _BATCH = jax.jit(jax.vmap(_solve_with_stats))
 # ---------------------------------------------------------------------------
 
 def build_points():
-    lo = {n: PRIOR_BOUNDS[n][0] for n in FREE_PARAMS}
-    hi = {n: PRIOR_BOUNDS[n][1] for n in FREE_PARAMS}
+    lo = {n: _ALL_BOUNDS[n][0] for n in FREE_PARAMS}
+    hi = {n: _ALL_BOUNDS[n][1] for n in FREE_PARAMS}
 
     sampler = qmc.Sobol(d=4, scramble=True, seed=0)
     u = sampler.random(N_SOBOL)
@@ -126,7 +127,8 @@ def build_points():
 
     OM, ST = np.meshgrid(om_grid, st_grid, indexing="ij")
     OM, ST = OM.ravel(), ST.ravel()
-    fixed_settings = [(_SAFE["mups2"], _SAFE["OmL"]), (0.6, 1.0), (2.5, 0.3)]
+    fixed_settings = [(_SAFE.get("mups2", MUPS2_FIXED), _SAFE["OmL"]),
+                      (0.6, 1.0), (2.5, 0.3)]
     g1_om = np.tile(OM, len(fixed_settings))
     g1_st = np.tile(ST, len(fixed_settings))
     g1_mu = np.concatenate([np.full_like(OM, mu) for mu, _ in fixed_settings])
@@ -295,7 +297,7 @@ def run_timing(slowest, seed=1):
         "fiducial (_SAFE)": (fid["omega_m"], fid["stigma"], fid["mups2"], fid["OmL"]),
         "slowest found": (slowest["omega_m"], slowest["stigma"],
                            slowest["mups2"], slowest["OmL"]),
-        "stigma floor corner": (0.5, PRIOR_BOUNDS["stigma"][0], fid["mups2"], fid["OmL"]),
+        "stigma floor corner": (0.5, _ALL_BOUNDS["stigma"][0], fid["mups2"], fid["OmL"]),
         "mid-box": (0.5, 2.0, 1.5, 0.8),
     }
 
@@ -313,7 +315,7 @@ def run_timing(slowest, seed=1):
     n_live = 250
 
     def jitter(center, name):
-        return np.clip(rng.normal(center, 0.02, n_live), *PRIOR_BOUNDS[name])
+        return np.clip(rng.normal(center, 0.02, n_live), *_ALL_BOUNDS[name])
 
     fast = tuple(jitter(fid[n], n) for n in ("omega_m", "stigma", "mups2", "OmL"))
     slow = tuple(jitter(slowest[n], n) for n in ("omega_m", "stigma", "mups2", "OmL"))
@@ -364,7 +366,7 @@ def make_plot(data):
     n_sobol_all = ns[sobol_mask]
     for ax, (name, vals, label) in zip(axesA, params):
         v = vals[sobol_mask]
-        lo, hi = PRIOR_BOUNDS[name]
+        lo, hi = _ALL_BOUNDS[name]
         bins = np.linspace(lo, hi, 31)
         idx = np.clip(np.digitize(v, bins) - 1, 0, len(bins) - 2)
         mean_ns = np.array([n_sobol_all[idx == b].mean() if (idx == b).any() else np.nan
@@ -383,9 +385,9 @@ def make_plot(data):
     axB1 = fig.add_subplot(gs[2, 0])
     axB2 = fig.add_subplot(gs[2, 1])
 
-    om_grid = np.linspace(*PRIOR_BOUNDS["omega_m"], GRID_N)
-    st_grid = np.linspace(*PRIOR_BOUNDS["stigma"], GRID_N)
-    mu_grid = np.linspace(*PRIOR_BOUNDS["mups2"], GRID_N)
+    om_grid = np.linspace(*_ALL_BOUNDS["omega_m"], GRID_N)
+    st_grid = np.linspace(*_ALL_BOUNDS["stigma"], GRID_N)
+    mu_grid = np.linspace(*_ALL_BOUNDS["mups2"], GRID_N)
 
     m1 = src == "grid_om_stigma"
     n1 = GRID_N * GRID_N

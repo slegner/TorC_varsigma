@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 from torc.theory import (aseries, cpseries, aseriesp, cpseriesp, small,
                           dda, ddcp, _TERM_LNA, Z_SPLIT, N_EARLY, N_LATE,
                           OMEGA_R_DEFAULT)
-from torc.priors import _SAFE
+from torc.priors import _SAFE, MUPS2_FIXED
 
 PLOT_DIR = os.path.join(HERE, "..", "plots")
 XSPLIT = -np.log(1.0 + Z_SPLIT)
@@ -56,7 +56,7 @@ plt.rcParams.update({
 
 def setup():
     om, st = _SAFE["omega_m"], _SAFE["stigma"]
-    mu, ol = _SAFE["mups2"], _SAFE["OmL"]
+    mu, ol = _SAFE.get("mups2", MUPS2_FIXED), _SAFE["OmL"]
     omr = OMEGA_R_DEFAULT
     tau = small(om, omr, st, mu)
     x0 = float(jnp.log(aseries(tau, om, omr, ol, st, mu)))

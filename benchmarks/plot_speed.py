@@ -118,14 +118,24 @@ def main():
     # Single-solve timing cannot show batching, which is what the sampler
     # actually does -- and diffrax gains ~3.4x from vmap while the Julia
     # driver is a serial loop.  State that plainly on the figure.
-    fig.text(0.5, -0.055,
-             r"Single solves, all setup costs included.  \textbf{The sampler "
-             r"batches:} under \texttt{vmap} diffrax reaches 1.45 ms/solve "
-             r"(3.4$\times$ better than serial), while the Julia driver is a "
-             r"serial loop at 0.72 ms/solve --- so in the pipeline the real "
-             r"gap is $\sim$2$\times$, not what these bars suggest.",
-             ha="center", va="top", fontsize=7.5, wrap=True)
-    fig.tight_layout(rect=[0, 0.04, 1, 0.96])
+    fig.text(0.5, -0.075,
+             r"\textbf{Equal requested tolerance is NOT equal accuracy.}  These bars "
+             r"compare runtime at a requested \texttt{rtol}; solvers deliver wildly "
+             r"different \emph{achieved} error for the same request (at $10^{-5}$: "
+             r"scipy DOP853 reaches $8\times10^{-7}$, CVODE Adams only $5\times10^{-3}$)."
+             "\n"
+             r"For the comparison that controls for this, see "
+             r"\texttt{plots/work\_precision.pdf}."
+             "\n"
+             r"Implicit solvers (Kvaerno) are configured with \emph{explicit} "
+             r"root-finder tolerances --- diffrax's default inherits them from the "
+             r"stepsize controller, which on this RHS costs a spurious 128$\times$."
+             "\n"
+             r"Single solves.  In the pipeline the sampler batches: diffrax reaches "
+             r"$\sim$1.4\,ms/solve under \texttt{vmap}, and the Julia IPC backend "
+             r"$\sim$0.19\,ms/solve threaded --- measured 3.0$\times$ end-to-end.",
+             ha="center", va="top", fontsize=6.8, wrap=True)
+    fig.tight_layout(rect=[0, 0.07, 1, 0.96])
 
     out = os.path.join(PLOT_DIR, "solver_speed_comparison")
     for ext in ("pdf", "png"):

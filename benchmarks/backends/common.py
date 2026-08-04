@@ -23,7 +23,7 @@ import jax.numpy as jnp
 
 from torc.theory import (aseries, cpseries, aseriesp, cpseriesp, small,
                           dda, ddcp, Z_SPLIT, N_EARLY, N_LATE, OMEGA_R_DEFAULT)
-from torc.priors import _SAFE
+from torc.priors import _SAFE, MUPS2_FIXED, _ALL_BOUNDS
 
 XSPLIT = -np.log(1.0 + Z_SPLIT)
 
@@ -31,7 +31,10 @@ XSPLIT = -np.log(1.0 + Z_SPLIT)
 def setup(params=None):
     """(x0, y0, args, xs) for the given parameter dict (default: _SAFE)."""
     p = params or _SAFE
-    om, st, mu, ol = p["omega_m"], p["stigma"], p["mups2"], p["OmL"]
+    # mups2 is absent from _SAFE when SAMPLE_MUPS2 is False (it is an exact
+    # background gauge parameter), so fall back to the fixed value.
+    om, st, ol = p["omega_m"], p["stigma"], p["OmL"]
+    mu = p.get("mups2", MUPS2_FIXED)
     omr = OMEGA_R_DEFAULT
     tau = small(om, omr, st, mu)
     x0 = float(jnp.log(aseries(tau, om, omr, ol, st, mu)))
