@@ -1,15 +1,40 @@
 """Sampling priors and the bounds-clamped likelihood wrapper.
 
-The prior is a uniform box.  IMPORTANT: the slice sampler (blackjax nss)
-proposes points outside the box; the prior density rejects them, but an
-out-of-bounds ODE solve burns the full max_steps budget and — because
-vmapped lanes run in lockstep — stalls its entire batch (~20x slowdown,
-measured at the committed max_steps=8192; ~3x at the current 1024).
-loglikelihood_bounded clamps such points to a safe fiducial before the
-solve and floors their logL at -1e30 directly: results are identical,
-batches stay fast.  Always hand THIS to the sampler.
+IMPORTANT: the slice sampler (blackjax nss) proposes points outside the
+prior support; the prior density rejects them, but an out-of-support ODE
+solve burns the full max_steps budget and — because vmapped lanes run in
+lockstep — stalls its entire batch (~20x slowdown, measured at the
+committed max_steps=8192; ~3x at the current 1024).  loglikelihood_bounded
+clamps such points to a safe fiducial before the solve and floors their
+logL at -1e30 directly: results are identical, batches stay fast.  Always
+hand THIS to the sampler.
 
-mups2 IS NOT SAMPLED.  It is an exact background gauge parameter: it
+STIGMA PRIOR (STIGMA_PRIOR)
+---------------------------
+"exponential" (default) is an Occam prior anchored at the LCDM limit:
+
+    pi(s) = exp(-(s - s0)/lam) / lam,   s >= s0 = 1.0001,  lam = 0.5
+
+Prior belief decays smoothly with distance from LCDM rather than being flat
+out to an arbitrary wall.  s = 1 exactly is a coordinate singularity (the
+series expansions carry (-1 + stigma) in denominators and fail to solve), so
+the support starts a hair above it.
+
+STIGMA_MAX is a SOLVER GUARD, not a prior bound.  The prior is unbounded
+above in intent; truncating at 20 removes prior mass exp(-19/0.5) ~ 3e-17,
+which is unreachable in any finite run, while ensuring the sampler can never
+hand the ODE a wild value.  The normalisation below accounts for the
+truncation exactly anyway.  Solves were verified over s in [1.0001, 50]
+(~70 steps throughout, no failures), so the guard has a wide margin.
+
+"uniform" restores the original flat prior on [1.0001, 3.0].
+
+CHANGING THIS CHANGES THE EVIDENCE.  ln Z under the two priors answers
+different questions and the values must never be swapped for one another.
+The uniform-prior result was TorC ln Z = -8.074 +- 0.098 against LCDM
+-7.736 +- 0.096 (Bayes factor 1.40:1 favouring LCDM, inconclusive).
+
+MUPS2 IS NOT SAMPLED.  It is an exact background gauge parameter: it
 rescales the field's clock (tau -> sqrt(mups2)*tau) and cancels out of
 E(z), verified to 1e-9 by tests/test_theory.py::test_mups2_gauge.  Its
 posterior was flat across the whole prior and, for a flat direction with a
@@ -23,15 +48,30 @@ observable, where mups2 becomes physical.
 """
 import jax
 import jax.numpy as jnp
+import numpy as np
 
 from .likelihood import loglikelihood, MUPS2_FIXED
 
 SAMPLE_MUPS2 = False
 
+STIGMA_PRIOR = "exponential"      # "exponential" | "uniform"
+STIGMA_LAMBDA = 0.5               # decay scale of the exponential
+STIGMA_FLOOR = 1.0001             # s = 1 exactly is singular
+STIGMA_MAX = 20.0                 # solver guard; prior mass above ~ 3e-17
+STIGMA_UNIFORM_MAX = 3.0          # only used when STIGMA_PRIOR == "uniform"
+
+_STIGMA_HI = STIGMA_MAX if STIGMA_PRIOR == "exponential" else STIGMA_UNIFORM_MAX
+
+# normalisation of the TRUNCATED exponential on [STIGMA_FLOOR, STIGMA_MAX]:
+#   int pi = lam * (1 - exp(-(hi - lo)/lam))
+# the bracket is 1 - 3e-17, but carry it so the density integrates to 1 exactly
+_STIGMA_NORM = STIGMA_LAMBDA * (
+    1.0 - np.exp(-(STIGMA_MAX - STIGMA_FLOOR) / STIGMA_LAMBDA))
+
 _ALL_BOUNDS = {
     "omega_m": (0.01,   0.99),
     "h0rd":    (3650.0, 18250.0),
-    "stigma":  (1.0001, 3.0),
+    "stigma":  (STIGMA_FLOOR, _STIGMA_HI),
     "mups2":   (0.5,    3.0),   # exact background gauge parameter
     "OmL":     (0.1,    1.5),
 }
@@ -44,17 +84,46 @@ _SAFE = {k: v for k, v in
          if k in PRIOR_BOUNDS}
 
 
+def _logprior_stigma(s):
+    """log pi(stigma), normalised over [STIGMA_FLOOR, _STIGMA_HI]."""
+    if STIGMA_PRIOR == "uniform":
+        return jax.scipy.stats.uniform.logpdf(
+            s, STIGMA_FLOOR, _STIGMA_HI - STIGMA_FLOOR)
+    inside = (s >= STIGMA_FLOOR) & (s <= STIGMA_MAX)
+    lp = -(s - STIGMA_FLOOR) / STIGMA_LAMBDA - jnp.log(_STIGMA_NORM)
+    return jnp.where(inside, lp, -jnp.inf)
+
+
+def _sample_stigma(key, n):
+    """Exact inverse-CDF draw from the truncated exponential."""
+    if STIGMA_PRIOR == "uniform":
+        return jax.random.uniform(key, (n,), minval=STIGMA_FLOOR,
+                                  maxval=_STIGMA_HI)
+    # CDF(s) = (1 - exp(-(s-lo)/lam)) / (1 - exp(-(hi-lo)/lam))
+    # => s = lo - lam * log(1 - u * (1 - exp(-(hi-lo)/lam)))
+    u = jax.random.uniform(key, (n,))
+    frac = 1.0 - np.exp(-(STIGMA_MAX - STIGMA_FLOOR) / STIGMA_LAMBDA)
+    s = STIGMA_FLOOR - STIGMA_LAMBDA * jnp.log1p(-u * frac)
+    return jnp.clip(s, STIGMA_FLOOR, STIGMA_MAX)
+
+
 def logprior_fn(params):
     lp = 0.0
     for name, (lo, hi) in PRIOR_BOUNDS.items():
-        lp += jax.scipy.stats.uniform.logpdf(params[name], lo, hi - lo)
+        if name == "stigma":
+            lp += _logprior_stigma(params[name])
+        else:
+            lp += jax.scipy.stats.uniform.logpdf(params[name], lo, hi - lo)
     return lp
 
 
 def sample_prior(rng_key, n):
     keys = jax.random.split(rng_key, len(PRIOR_BOUNDS))
-    return {name: jax.random.uniform(k, (n,), minval=lo, maxval=hi)
-            for k, (name, (lo, hi)) in zip(keys, PRIOR_BOUNDS.items())}
+    out = {}
+    for k, (name, (lo, hi)) in zip(keys, PRIOR_BOUNDS.items()):
+        out[name] = (_sample_stigma(k, n) if name == "stigma"
+                     else jax.random.uniform(k, (n,), minval=lo, maxval=hi))
+    return out
 
 
 def loglikelihood_bounded(params):
