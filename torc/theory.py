@@ -34,6 +34,16 @@ verified numerically):
                           independent of it.  It is kept as an argument for
                           interface stability (and for future perturbation-
                           level observables) but does nothing here.
+                          WHY: mups2 multiplies every term quadratic in
+                          tau-derivatives in dda/ddcp but none of the
+                          matter/radiation/Lambda sources, so it is absorbed
+                          by tau = sqrt(mups2)*sigma; the series ICs scale
+                          the same way (tau_ini ~ sqrt(mups2), term n ~
+                          tau^n mups2^(-n/2)).  H then carries one common
+                          factor mups2^(-1/2) at every epoch, which cancels
+                          in the ratio E = H/H(a=1).  Derived and checked
+                          step by step in scripts/explain_mups2_gauge.py
+                          (-> plots/mups2_gauge.pdf).
 
 Solver: x = ln(a) is the integration variable.  Because today is the FIXED
 endpoint x = 0, the whole solve is ONE diffrax call on a static save grid —
