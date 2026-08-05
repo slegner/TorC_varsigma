@@ -36,15 +36,17 @@ NUM_LIVE = 1000
 NUM_DELETE = NUM_LIVE // 10          # 10% -- the blackjax-nss CPU guidance
 NUM_INNER_STEPS = len(PRIOR_BOUNDS) * 5
 SEED = 0
-from torc.priors import STIGMA_PRIOR
+from torc.priors import STIGMA_PRIOR, STIGMA_LAMBDA
 # separate filename per prior, so the uniform-prior chain survives
-_TAG = "" if STIGMA_PRIOR == "uniform" else f"_{STIGMA_PRIOR}"
+# tag by prior AND width, so lambda variants do not clobber each other
+_TAG = ("" if STIGMA_PRIOR == "uniform"
+        else f"_{STIGMA_PRIOR}_lam{STIGMA_LAMBDA:g}".replace(".", "p"))
 OUT = os.path.join(HERE, "..", "chains",
                    f"torc_ns_julia_1000{_TAG}.npz")
 
 if __name__ == "__main__":
     print(f"ndim={len(PRIOR_BOUNDS)} ({', '.join(PRIOR_BOUNDS)})")
-    print(f"stigma prior: {STIGMA_PRIOR}")
+    print(f"stigma prior: {STIGMA_PRIOR}  lambda={STIGMA_LAMBDA}")
     print(f"NUM_LIVE={NUM_LIVE} NUM_DELETE={NUM_DELETE} "
           f"NUM_INNER_STEPS={NUM_INNER_STEPS} seed={SEED}")
     if os.path.exists(OUT):

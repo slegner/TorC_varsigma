@@ -58,5 +58,19 @@ Dependencies: jax, diffrax, optimistix, blackjax (handley-lab fork with
   lanes run in lockstep (~20× slowdown without the clamp).
 - Exploration settings (250 live / 50 delete / 5·ndim inner steps) give
   ln Z to ±0.2; use 1000+ live points for publication numbers.
-- Reference results (DESI DR2 BAO alone): LCDM ln Z ≈ −7.73 ± 0.14,
-  TorC-noH0 ln Z ≈ −7.86 ± 0.21 — a statistical dead heat.
+- Reference results (DESI DR2 BAO alone, **1000 live points**, Julia IPC
+  backend). LCDM: ln Z = −7.739 ± 0.096. TorC depends on the ς prior:
+
+  | ς prior | ln Z | Δ ln Z vs LCDM | Bayes factor |
+  |---|---|---|---|
+  | exponential λ=0.5 | −7.521 ± 0.097 | +0.22 ± 0.14 | 1.24:1 TorC |
+  | uniform [1, 3]    | −8.073 ± 0.096 | −0.33 ± 0.14 | 1.40:1 LCDM |
+  | exponential λ=2.0 | −8.461 ± 0.102 | −0.72 ± 0.14 | 2.06:1 LCDM |
+
+  All three are |Δ ln Z| < 1 — inconclusive on the Jeffreys scale, a
+  statistical dead heat. The sign of the Bayes factor is set by the prior,
+  not by the data, so **no single number here is "the" Bayes factor**.
+  ln Z falls monotonically as the prior widens: that is the Occam factor
+  (the posterior lands at ς ≈ 1.3–1.4 regardless, so a wider prior only
+  adds volume where the likelihood is not). See
+  `scripts/plot_prior_sensitivity.py` → `plots/prior_sensitivity.pdf`.
