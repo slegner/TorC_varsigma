@@ -9,9 +9,13 @@ next to the related CPL work. Its own pre-absorb git history is preserved as a
 bundle in `archive/` — see `archive/RESTORING_HISTORY.md`.
 
 **Related work nearby:** the CPL/w0waCDM DESI DR2 comparison is a sibling at
-`../cpl/`. DESI distance data is read from `PhD2025-26/distances/desidr2/` via
-`../../../desidr2/` — Stigma now sits inside `distances/`, so that path is one
-segment shorter than it used to be.
+`../cpl/` (currently on the `solver-dopri8-and-cost-diagnostics` branch, not yet
+on `main`).
+
+**DESI data:** read from the repo's own vendored copy at `../data/desidr2/`,
+`__file__`-relative and overridable with `$DESIDR2_DIR` — the same convention as
+`torc/likelihood.py`. Earlier versions reached outside the repo to
+`PhD2025-26/distances/desidr2/`; that would break a fresh clone.
 
 ## Layout
 

@@ -46,8 +46,10 @@ from equations_jax import (
 )
 
 # ── DESI DR2 data ─────────────────────────────────────────────────────────────
-_DATA_DIR = os.path.join(os.path.dirname(__file__),
-                         "../../../desidr2")
+_DATA_DIR = os.environ.get(
+    "DESIDR2_DIR",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                 "..", "..", "data", "desidr2"))
 
 _mean_raw = np.array([
     7.944,   # DV/rs @ z=0.295

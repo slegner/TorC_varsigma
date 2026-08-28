@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.integrate import quad
@@ -10,10 +11,15 @@ import matplotlib.pyplot as plt
 
 # ── 2. LCDM REFERENCE (fit to DESI DR2) ──────────────────────────────────────
 
-# Load DESI DR2 data
-data = read_csv("../../../desidr2/desidr2_mean.txt",
+# Load DESI DR2 data (vendored in the repo at data/desidr2; override with
+# $DESIDR2_DIR), matching the convention in torc/likelihood.py
+_DATA_DIR = os.environ.get(
+    "DESIDR2_DIR",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                 "..", "..", "data", "desidr2"))
+data = read_csv(os.path.join(_DATA_DIR, "desidr2_mean.txt"),
                 header=None, index_col=None, sep=r"\s+", comment="#")
-cov = np.loadtxt("../../../desidr2/desidr2_cov.txt")
+cov = np.loadtxt(os.path.join(_DATA_DIR, "desidr2_cov.txt"))
 
 zs = data.iloc[:, 0].to_numpy()
 mean_data = data.iloc[:, 1].to_numpy()
