@@ -9,3 +9,16 @@ diagnostics/*.npz
 benchmarks/torc_rhs.jl
 benchmarks/reference_E.npz
 benchmarks/julia_E.tsv
+
+# Raw CPL sampler output and fgivenx caches (~70 MB of .pkl).  Kept out of the
+# repo to stay lean: re-run cpl/cpl_nss.py to regenerate the dead/live files
+# that cpl/*.py and scripts/plot_fgivenx_vs_cpl.py read.
+cpl/output/
+cpl/output_mock/
+
+# run logs
+logs/
+logs_all*.txt
+
+# Pantheon+ is not vendored, exactly like DESY5: set $PANTHEONPLUS_DIR
+data/PantheonPlus/
