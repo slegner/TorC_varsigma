@@ -1,0 +1,267 @@
+\documentclass[aps,prd,reprint,preprintnumbers,showpacs,floatfix,nofootinbib,superscriptaddress]{revtex4-2}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{xspace}
+\usepackage{tabularx}
+\usepackage{siunitx}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{xstring}
+\usepackage{etoolbox}
+\usepackage{notoccite}
+\usepackage{natbib}
+\usepackage{mathrsfs}
+\usepackage{lineno}
+\usepackage{tensor}
+\usepackage{accents}
+\usepackage{microtype}
+\usepackage[justification=raggedright,singlelinecheck=false,format=plain]{caption}
+
+\usepackage{tocbasic}
+\setcounter{tocdepth}{1}
+\DeclareTOCStyleEntry[numwidth=25pt,linefill=\bfseries\TOCLineLeaderFill]{tocline}{section}
+\DeclareTOCStyleEntry[entryformat=\textit,numwidth=10pt,linefill=\TOCLineLeaderFill]{tocline}{subsection}
+\DeclareTOCStyleEntry[entryformat=\textit,numwidth=10pt,linefill=\TOCLineLeaderFill]{tocline}{subsubsection}
+
+\parindent 2mm
+
+\input{MacrosJournalNames.tex}
+
+\usepackage{hyperref}
+\hypersetup{%
+ colorlinks = true,%
+ linkcolor = red,%
+ citecolor = red,%
+ filecolor = red,%
+ urlcolor = red%
+ }%
+\usepackage[capitalize]{cleveref}
+\AddToHook{cmd/appendix/before}{\crefalias{section}{appendix}}
+\makeatletter
+\renewcommand{\paragraph}{%
+\@startsection{paragraph}{4}%
+{\z@}{1.21ex \@plus 1ex \@minus .2ex}{0.9em}%
+{\normalfont\normalsize\bfseries}%
+}
+\usepackage{titlesec}
+\newrobustcmd{\pea}[1]{%
+	\emph{#1}\textbf{\ \ \ ---}
+}
+\titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{\emph\theparagraph}{1em}{\pea}
+\titleformat{\section}[block]{\normalfont\bfseries\centering}{\MakeUppercase\thesection}{1em}{\MakeUppercase}
+\makeatother
+
+\newcommand{\hunit}{km\,s$^{-1}$\,Mpc$^{-1}\,~$}
+\newcommand{\LCDM}{\ensuremath{\Lambda\mathrm{CDM}}}
+\newcommand{\Mp}{M_\mathrm{P}^2}
+\newcommand{\RR}{\mathcal{R}}
+\newcommand{\TT}{\mathcal{T}}
+\newcommand{\PGTq}{\ensuremath{\text{PGT}^{\text{q}+}}}
+\DeclareSIUnit\Mpc{Mpc}
+
+% Comment macros for authors
+\newcommand{\WB}[1]{\textbf{\textit{\textcolor{blue}{WB: #1}}}}
+\newcommand{\SL}[1]{\textbf{\textit{\textcolor{red}{SL: #1}}}}
+\newcommand{\WH}[1]{\textbf{\textit{\textcolor{ForestGreen}{WH: #1}}}}
+
+\newrobustcmd{\SmashAcute}[1]{%
+	{\vphantom{#1}\smash{\Acute{#1}}}
+}
+\newrobustcmd{\ECT}[1]{%
+	\tensor{\mathcal{T}}{#1}
+}
+\newrobustcmd{\ECR}[1]{%
+	\tensor{\mathcal{R}}{#1}
+}
+\newrobustcmd{\MetricPerturbation}[1]{%
+	\tensor*{h}{#1}
+}
+\newrobustcmd{\RiemannianR}[1]{%
+	\tensor{R}{#1}
+}
+\newrobustcmd{\StressEnergyTensor}[1]{%
+	\tensor{\mathbb{T}}{#1}
+}
+\newrobustcmd{\TorsionSource}[1]{%
+	\tensor{\Delta}{#1}
+}
+\newrobustcmd{\AffineConnection}[1]{%
+	\tensor{\Gamma}{#1}
+}
+\newrobustcmd{\LeviCivitaConnection}[1]{%
+	\big\{\tensor{}{#1}\big\}
+}
+\newrobustcmd{\PD}[1]{%
+	\tensor{\partial}{#1}
+}
+\newrobustcmd{\CD}[1]{%
+	\tensor{\nabla}{#1}
+}
+\makeatletter
+
+\allowdisplaybreaks
+
+\begin{document}
+
+\title{Investigating the cosmological properties of the Stigma Q-torsion model}
+
+\author{Sinah Legner}
+\email{sl2091@cam.ac.uk}
+\affiliation{Astrophysics Group, Cavendish Laboratory, JJ Thomson Avenue, Cambridge CB3 0HE, UK}
+\affiliation{Kavli Institute for Cosmology, Madingley Road, Cambridge CB3 0HA, UK}
+
+\author{Will Barker}
+\email{barker@fzu.cz}
+\affiliation{Central European Institute for Cosmology and Fundamental Physics, Institute of Physics of the Czech Academy of Sciences, Na Slovance 1999/2, 182 00 Prague 8, Czechia}
+
+\author{Will Handley}
+\email{wh260@cam.ac.uk}
+\affiliation{Kavli Institute for Cosmology, Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{Institute of Astronomy, Madingley Road, Cambridge CB3 0HA, UK}
+
+\begin{abstract}
+	Abstract text goes here.
+\end{abstract}
+
+\maketitle
+
+% Reduce spacing in table of contents
+{
+\setlength{\parskip}{0pt}
+\setlength{\topsep}{0pt}
+\setlength{\partopsep}{0pt}
+\setlength{\itemsep}{0pt}
+\renewcommand{\baselinestretch}{0.8}
+\tableofcontents
+}
+\setlength{\parskip}{6pt}
+
+\section{Introduction}\label{sec:intro}
+
+\paragraph*{Poincar\'e Gauge Theory} The Poincar\'e Gauge Theory (PGT) of gravity provides a natural framework for introducing torsion and curvature as independent dynamical quantities in spacetime. Within the catalogue of ghost-free, tachyon-free, and power-counting renormalisable PGT models identified in~\cite{Lin:2018awc, Lin:2019ugq}, the \emph{Stigma} model represents a distinct branch characterised by a non-zero Q-torsion sector. The general PGT Lagrangian admits a rich parameter space, of which the Stigma model occupies a specific region defined by the coupling constants $(\varsigma, \upsilon_2)$.
+
+\begin{equation}
+		\begin{align}
+				\mathcal{L} = & \frac{3 \Mp \upsilon_2}{4 \varsigma}\Big[ \frac{1}{2} \big( 4 \varsigma - \varpi^2\big) R - g^{\mu\nu}\partial_\mu \varpi \partial_\nu \varpi \\
+							  & + \varsigma \phi^2 - \varpi^2 \phi^2 + \frac{4}{3}\varsigm \sqrt{J_\mu J^\mu} \Big] - \Mp \Lambda + \mathcal{L}_\mathrm{M}\\
+						J_\mu \equiv & \varpi^3 \partial_\mu (\phi/\varpi) - \partial_\mu \phi
+		\end{align}
+\end{equation}
+
+\begin{equation}
+		\begin{align}
+				H^2 = & \frac{1}{\varpi^2-4\varsigma} \\
+					  & \times \Bigg[-\frac{4 H_0^2\varsigma}{\upsilon_2}\Big(\Omega_{\mathrm{r},0}a^{-4}+\Omega_{\mathrm{m},0}a^{-3}+\Omega_{\Lambda,0}\Big) \\
+						& + 2 H \varpi\dot{\varpi} + \dot{\varpi}^2  + \frac{4\left(H\varsigma\left(\varpi^2-1\right)+\varsigma\varpi\dot{\varpi}\right)^2}{\varsigma-\varpi^2}\Bigg]
+						\end{align}
+\end{equation}
+
+\begin{equation}
+		\begin{aligned}
+				\ddot{\varpi} & =\frac{1}{a^2\left(\varsigma-\varpi^2\right)\left(\varsigma+\left(4\varsigma^2-1\right)\varpi^2\right)} \\
+							  & \times \Bigg[-3\varsigma^2 a \dot a \dot{\varpi} + 6\varsigma\left(1-2\varsigma^2\right)a\varpi^2\dot a\dot{\varpi} \\
+							  & +3\left(4\varsigma^2-1\right)a\varpi^4\dot a\dot{\varpi}+\left(4\varsigma^2-1\right)\varpi^5\left(\dot a^2+a\ddot a\right) \\
+							  &+2\varsigma\varpi^3\Big(\left(1-4\varsigma\right)\dot a^2+\left(1-2\varsigma(1+\varsigma)\right)a\ddot a\Big)\\
+							  & +\varsigma^2\varpi\Big(3\dot a^2+a\left(-4\varsigma a\dot{\varpi}^2+\left(4\varsigma-1\right)\ddot a\right)\Big) \Bigg]
+				
+		\end{aligned}
+\end{equation}
+
+
+
+
+
+\section{Cosmology}\label{sec:cosmology}
+
+\subsection{Behavior at radiation-dominated epoch}
+We look at the behaviour of the field equations at the radiation dominated epoch, by looking only at a fluid-dominated epoch, i.e. $H = 2/(3(1+w_i)t)$, where $w_i$ is the equation of state parameter for the fluid. We find that from the field equation of $\varpi$, which we assume the field $\varpi$ is a constant. 
+\begin{equation}
+		\label{eq:varpi_field_eq}
+		\begin{align}
+				\left.\frac{\partial L}{\partial \varpi}\right|_{\varpi=\varpi_i} \propto & \quad \frac{\varpi_i}{(w_i + 1)^2 (\varpi_i^2 - \varsigma)^2 \varsigma}\\
+																								   &\times \Biggl[(3 w_i-1)(4 \varsigma^2 - 1) \varpi_i^4 \\
+																								& + \varsigma^2\Big( -7 + 4 \varsigma +3 w_i (4 \varsigma -1) \\
+																								& -2 \varpi_i^2 \varsigma \big(1+ 2(\varsigma - 3) \varsigma \\
+																								& + w_i (6\varsigma (1+\varsigma)-3)\big)\Big)\Biggr]
+		\end{align}
+\end{equation}
+Solving $\varpi^2$ for this equation reveals that
+\begin{equation}
+		\begin{align}
+				\varpi_i^2 = & \frac{\varsigma}{(3 w_i - 1)(4 \varsigma^2 - 1)} \\
+						   & \times \Big[1+2(\varsigma-3)\varsigma + w_i \Big(6\varsigma (1+\varsigma)-3\Big) \\
+						   & \pm 2 \sqrt{(\varsigma-1)^2 \Big(2 - 6 w_i + (\varsigma + 3 w_i \varsigma)^2\Big)}\Big] 
+		\end{align}
+\end{equation}
+We can see that the solution contain poles at $w_i = 1/3$ and $\varsigma = 1/2$. However, upon further investigation we realised that the pole of $w_i = 1/3$ is a false-pole. Subsituting $w_i = 1/3$ at~\cref{eq:varpi_field_eq} we find that the equation reduces to
+\begin{equation}
+		\left.\frac{\partial L}{\partial \varpi}\right|_{\varpi=\varpi_i}^{w_i=1/3} \propto -\frac{(\varpi_i^2 - 1)(\varsigma-1)\varpi_i \varsigma }{(\varpi_i^2 - \varsigma)^2}
+\end{equation}
+The numerator shows that at radiation-dominated epoch, $\varpi_i = 1$ and $\varsigma = 1$ are the only two solutions. To ensure that the field equation goes to zero, one of them must be set to be true.
+
+\subsection{Power series}
+\begin{equation}
+		\begin{align}
+				\varpi = & 1 \mp \frac{H_0 \Omega_{\mathrm{m, 0}}\sqrt{4 \varsigma - 1}}{8 \sqrt{- \upsilon_2 \Omega_{\mathrm{r, 0}} \varsigma}} \tau\\
+						 & - \frac{3 H_0^2 \Omega_{\mathrm{m, 0}}^2 (4 \varsigma - 1)(2 + \varsigma(3 \varsigma - 2))}{128 \upsilon_2 \Omega_{\mathrm{r, 0}}(\varsigma - 1)\varsigma (8 \varsigma^2 + \varsigma -3)}\tau^2\\
+						 & \pm \frac{H_0^3\Omega_\mathrm{m, 0}^3}{1024(\varsigma-1)^2}\Big(\frac{4 \varsigma -1}{- \upsilon_2 \varsigma \Omega_\mathrm{r,0}}\Big)^{3/2} \\ 
+						 & \times \frac{\tau^3}{(8 \varsigma^2 + \varsigma -3)(20 \varsigma^2 + \varsigma -6)} \times \Big(192 \varsigma^6 \\
+						 &+ 380 \varsigma^5 -720 \varsigma^4 -225 \varsigma^3 +175 \varsigma^2 + 72 \varsigma - 36\Big)\\
+						 &+ \mathcal{O}(\tau^4)
+		\end{align}
+\end{equation}
+\begin{equation}
+		\begin{align}
+				a = & \pm \frac{2 H_0 \sqrt{\Omega_{\mathrm{r,0}} \varsigma}}{\alpha \sqrt{\upsilon_2 (1- 4 \varsigma)}}\tau - \frac{H_0^2 \Omega_\mathrm{m, 0}}{4 \alpha \upsilon_2} \tau^2\\
+					& \pm \frac{3 H_0^3 \Omega_{\mathrm{m, 0}}^2 \sqrt{\varsigma (4 \varsigma - 1)}(\varsigma(24 \varsigma + 5) -2)}{64 \alpha (-\upsilon_2)^{3/2} \sqrt{\Omega_{\mathrm{r, 0}}}(\varsigma - 1)(8 \varsigma^2 + \varsigma -3)}\tau^3\\
+					& + \frac{H_0^4 \Omega_\mathrm{m,0}^3 (4 \varsigma - 1)}{512 \alpha \upsilon_2^2 \Omega_\mathrm{r,0} (\varsigma - 1)^2}\\
+					& \times \frac{240\varsigma^5-1510\varsigma^4-246\varsigma^3+357\varsigma^2+31\varsigma-6}{(8 \varsigma^2 + \varsigma -3)(20 \varsigma^2 + \varsigma -6)}\tau^4\\
+					& + \mathcal{O}(\tau^5)
+		\end{align}
+\end{equation}
+
+\begin{equation}
+				  \begin{align}
+				  H^2 ={}& \frac{1}{4\varsigma-\varpi^2} \Bigg[ \frac{4H_0^2\varsigma}{-\upsilon_2^2} \left( \Omega_{\mathrm r,0}a^{-4} +\Omega_{\mathrm m,0}a^{-3} +\Omega_{\Lambda,0} \right) + \\
+						 &2H\varpi\dot{\varpi} +\dot{\varpi}^{\,2} \nonumber\\ 
+						 &+ \frac{ 4\left[ H\varsigma\left(\varpi^2-1\right) +\varsigma\varpi\dot{\varpi} \right]^2 }{ \varsigma-\varpi^2 } \Bigg]. \label{eq:TorCF1} \end{align}
+				 \end{equation}
+
+\section{Methodology}\label{sec:methodology}
+
+Blahblahblahblahblah
+
+\section{blah}
+
+Methodology text goes here.
+
+\SL{Describe the numerical ODE solver, initial conditions from power-series expansion, rescaling of the scale factor, and comparison with \LCDM{}.}
+
+\section{Results}\label{sec:results}
+
+Results text goes here.
+
+\SL{Present plots of the expansion history, equation of state, and comparison with \LCDM{}.}
+
+\section{Discussion}\label{sec:discussion}
+
+Discussion text goes here.
+
+\section{Conclusion}\label{sec:conclusion}
+
+Conclusion text goes here.
+
+\begin{acknowledgments}
+Acknowledgments go here.
+\end{acknowledgments}
+
+\bibliographystyle{apsrev4-2}
+\bibliography{paper_Stigma}
+
+\end{document}

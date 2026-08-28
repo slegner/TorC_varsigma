@@ -1,0 +1,857 @@
+(* ===== IN[1] bc=256 ===== *)
+HoldForm[Quit[]]
+(* ===== IN[2] bc=8360 ===== *)
+HoldComplete[Get["xAct`xTensor`"]; , Null, Get["xAct`xPerm`"]; , Null, \
+Get["xAct`xTras`"]; , Null, 
+ Get[FileNameJoin[{NotebookDirectory[], "DefManifold.m"}]], Null]
+(* ===== IN[3] bc=16400 ===== *)
+HoldComplete[DefChart[ch, M, {0, 1, 2, 3}, {t[], x[], y[], z[]}, ChartColor \
+-> Purple], Null, 
+ DefScalarFunction[nn, PrintAs -> "N"]; , Null, DefScalarFunction[aa, \
+PrintAs -> "a"]; , Null, 
+ metricmatrix = {{nn[t[]]^2, 0, 0, 0}, {0, -aa[t[]]^2, 0, 0}, {0, 0, \
+-aa[t[]]^2, 0}, {0, 0, 0, -aa[t[]]^2}}; , Null, 
+ metric = CTensor[metricmatrix, {-ch, -ch}], Null, SetCMetric[metric, ch, \
+SignatureOfMetric -> {1, 3, 0}], Null, 
+ cd = CovDOfMetric[metric], Null, detg = Det[metricmatrix], Null, Riemanncd \
+= Riemann[cd]; , Null, Riccicd = Ricci[cd]; , Null, 
+ RicciScalarcd = RicciScalar[cd]; , Null, Print[Simplify[RicciScalarcd]]; , \
+Null]
+(* ===== IN[4] bc=19488 ===== *)
+HoldComplete[DefScalarFunction[Psis, PrintAs -> "\[Psi]"]; , Null, \
+DefScalarFunction[Phis, PrintAs -> "\[Phi]"]; , Null, 
+ DefScalarFunction[Varpis, PrintAs -> "\[CurlyPi]"]; , Null, \
+DefScalarFunction[Rhos, PrintAs -> "\[Rho]"]; , Null, 
+ phi = CTensor[Phis[t[]], {}]; , Null, psi = CTensor[Psis[t[]], {}]; , Null, \
+varpi = CTensor[Varpis[t[]], {}]; , Null, 
+ Xphi = Simplification[ContractBasis[(1/2)*cd[-a][phi[]]*cd[a][phi[]]]]; , \
+Null, 
+ Xpsi = FullSimplify[ContractBasis[(1/2)*cd[-a][psi[]]*cd[a][psi[]]]]; , \
+Null, DefTensor[J[a], M]; , Null, 
+ J[a_] := 4*sig1*psi[]^3*cd[a][phi[]/psi[]] - Mp^2*ups2*cd[a][phi[]]; , \
+Null, JJ = FullSimplify[ContractBasis[J[-a]*J[a]]]; , 
+ Null, sqJJ = PowerExpand[Sqrt[JJ]]; ]
+(* ===== IN[5] bc=6968 ===== *)
+HoldForm[L = Sqrt[-detg]*(((1/2)*Mp^2*ups2 - \
+(1/2)*sig2*psi[]^2)*RicciScalarcd[] - 6*sig2*Xpsi + sqJJ + 
+    (3/4)*Mp^2*(ups2*phi[]^2 + 4*ups1*psi[]^2) - 3*sig2*phi[]^2*psi[]^2)]
+(* ===== IN[6] bc=43776 ===== *)
+HoldComplete[LTemp := FullSimplify[L /. {t[] -> t}, Assumptions -> {aa[t] > \
+0, nn[t] > 0}]; , Null, 
+ Lnew := FullSimplify[LTemp /. {sig1 -> sig2*stigma, ups1 -> 0, Psis[t] -> \
+(Mp*Sqrt[ups2]*Varpis[t])/Sqrt[4*sig2*stigma], 
+      Derivative[1][Psis][t] -> \
+(Mp*Sqrt[ups2]*Derivative[1][Varpis][t])/Sqrt[4*sig2*stigma]}, 
+    Assumptions -> {aa[t] > 0, nn[t] > 0}]; , Null, Print["With the \
+substitution for psi[] and sig1, the Lagrangian becomes"], 
+ Null, Print[Lnew]; , Null, Eqn = FullSimplify[Sum[(-1)^it*D[D[Lnew, \
+Derivative[it][nn][t]], {t, it}], {it, 0, 2}] - 
+     Rhos[t]*aa[t]^3]; , Null, 
+ Eqa = FullSimplify[Sum[(-1)^it*D[D[Lnew, Derivative[it][aa][t]], {t, it}], \
+{it, 0, 2}] + 3*P[t]*aa[t]^2]; , Null, 
+ EqPhi = FullSimplify[Sum[(-1)^it*D[D[Lnew, Derivative[it][Phis][t]], {t, \
+it}], {it, 0, 2}]]; , Null, 
+ EqVarpi = FullSimplify[Sum[(-1)^it*D[D[Lnew, Derivative[it][Varpis][t]], \
+{t, it}], {it, 0, 2}]]; , Null, nn[t_] := 1; , Null, 
+ DefScalarFunction[rhom, PrintAs -> "\(\*SubscriptBox[\(\[Rho]\), \
+\(m\)]\)"]; , Null, 
+ DefScalarFunction[rhor, PrintAs -> "\(\*SubscriptBox[\(\[Rho]\), \
+\(r\)]\)"]; , Null, 
+ DefScalarFunction[rhoL, PrintAs -> "\(\*SubscriptBox[\(\[Rho]\), \
+\(\[CapitalLambda]\)]\)"]; , Null, Rhos[t_] := rhom[t] + rhor[t] + rhoL[t]; \
+, 
+ Null, P[t_] := (1/3)*rhor[t] - rhoL[t]; , Null, Phis[t_] = Phis[t] /. \
+Flatten[DSolve[EqPhi == 0, Phis[t], t]]; , Null, 
+ EqnFinal = FullSimplify[Eqn]; , Null, EqaFinal = FullSimplify[Eqa]; , Null, \
+EqVarpiFinal = FullSimplify[EqVarpi]; , Null, 
+ Print["After applying constraints and solving phi equation:"]; , Null, \
+Print["Final Equation for N (lapse function):"]; , Null, 
+ Print[EqnFinal]; , Null, Print["Final Equation for a (scale factor):"]; , \
+Null, Print[EqaFinal]; , Null, 
+ Print["Final Equation for Varpi field:"]; , Null, Print[EqVarpiFinal]; , \
+Null]
+(* ===== IN[7] bc=440 ===== *)
+HoldForm[EqnFinal /. sign -> 1]
+(* ===== IN[8] bc=23600 ===== *)
+HoldComplete[DefScalarFunction[Tau, PrintAs -> "\[Tau]"]; , Null, \
+DefConstantSymbol[alps, PrintAs -> "\[Alpha]"]; , Null, 
+ DefConstantSymbol[H0, PrintAs -> "\(\*SubscriptBox[\(\[ScriptCapitalH]\), \
+\(0\)]\)"]; , Null, 
+ DefConstantSymbol[OmegaM0, PrintAs -> \
+"\(\*SubscriptBox[\(\[CapitalOmega]\), \(m,0\)]\)"]; , Null, 
+ DefConstantSymbol[OmegaR0, PrintAs -> \
+"\(\*SubscriptBox[\(\[CapitalOmega]\), \(r,0\)]\)"]; , Null, 
+ DefConstantSymbol[OmegaL0, PrintAs -> \
+"\(\*SubscriptBox[\(\[CapitalOmega]\), \(\[CapitalLambda],0\)]\)"]; , Null, 
+ DefConstantSymbol[ScaleFactor1, PrintAs -> "\(\*SubscriptBox[\(a\), \
+\(1\)]\)"]; , Null, 
+ DefConstantSymbol[ScaleFactor2, PrintAs -> "\(\*SubscriptBox[\(a\), \
+\(2\)]\)"]; , Null, 
+ DefConstantSymbol[ScaleFactor3, PrintAs -> "\(\*SubscriptBox[\(a\), \
+\(3\)]\)"]; , Null, 
+ DefConstantSymbol[ScaleFactor4, PrintAs -> "\(\*SubscriptBox[\(a\), \
+\(4\)]\)"]; , Null, 
+ DefConstantSymbol[ScaleFactor5, PrintAs -> "\(\*SubscriptBox[\(a\), \
+\(5\)]\)"]; , Null, 
+ DefConstantSymbol[VarPi0, PrintAs -> "\(\*SubscriptBox[\(\[CurlyPi]\), \
+\(0\)]\)"]; , Null, 
+ DefConstantSymbol[VarPi1, PrintAs -> "\(\*SubscriptBox[\(\[CurlyPi]\), \
+\(1\)]\)"]; , Null, 
+ DefConstantSymbol[VarPi2, PrintAs -> "\(\*SubscriptBox[\(\[CurlyPi]\), \
+\(2\)]\)"]; , Null, 
+ DefConstantSymbol[VarPi3, PrintAs -> "\(\*SubscriptBox[\(\[CurlyPi]\), \
+\(3\)]\)"]; , Null, 
+ DefConstantSymbol[VarPi4, PrintAs -> "\(\*SubscriptBox[\(\[CurlyPi]\), \
+\(4\)]\)"]; , Null, 
+ ScaleFactor[x_] := ScaleFactor1*x + ScaleFactor2*x^2 + ScaleFactor3*x^3 + \
+ScaleFactor4*x^4 + ScaleFactor5*x^5; , Null, 
+ VarPi[x_] := VarPi0 + VarPi1*x + VarPi2*x^2 + VarPi3*x^3 + VarPi4*x^4; , \
+Null, rhom[x_] := 3*Mp^2*OmegaM0*(H0^2/aa[x]^3); , 
+ Null, rhor[x_] := 3*Mp^2*OmegaR0*(H0^2/aa[x]^4); , Null, rhoL[x_] := \
+3*Mp^2*OmegaL0*H0^2; , Null]
+(* ===== IN[9] bc=472 ===== *)
+HoldForm[ups2 = -mups2]
+(* ===== IN[10] bc=80 ===== *)
+HoldForm[Null]
+(* ===== IN[11] bc=864 ===== *)
+HoldComplete[FullSimplify[EqnFinal], Null, FullSimplify[EqaFinal], Null, \
+FullSimplify[EqVarpiFinal]]
+(* ===== IN[12] bc=2344 ===== *)
+HoldForm[FullSimplify[EqVarpiFinal /. Derivative[1][$CellContext`Varpis][t] \
+-> 0 /. Derivative[2][$CellContext`Varpis][t] -> 0]]
+(* ===== IN[13] bc=2848 ===== *)
+HoldForm[Eq1nostig = FullSimplify[EqnFinal /. $CellContext`stigma -> 1 /. \
+mups2 -> 4/3 /. Derivative[1][aa][t] -> H*aa[t]]]
+(* ===== IN[14] bc=976 ===== *)
+HoldForm[Eq1Hnostig = FullSimplify[Eq1nostig /. H^2 -> H2]]
+(* ===== IN[15] bc=1624 ===== *)
+HoldForm[Eq1 = FullSimplify[EqnFinal /. Derivative[1][aa][t] -> H*aa[t]]]
+(* ===== IN[16] bc=1000 ===== *)
+HoldForm[Eq1H = FullSimplify[Eq1 /. H^2 -> H2]]
+(* ===== IN[17] bc=920 ===== *)
+HoldForm[FullSimplify[Solve[Eq1Hnostig == 0, H2]]]
+(* ===== IN[18] bc=912 ===== *)
+HoldForm[FullSimplify[Solve[Eq1H == 0, H2]]]
+(* ===== IN[19] bc=16632 ===== *)
+HoldForm[FullSimplify[
+  {{H2 -> ((4*$CellContext`H0^2*$CellContext`stigma*($CellContext`OmegaR0 + \
+$CellContext`OmegaM0*$CellContext`aa[t] + 
+            \
+$CellContext`OmegaL0*$CellContext`aa[t]^4))/(mups2*$CellContext`aa[t]^4) + \
+2*H*$CellContext`Varpis[t]*
+          Derivative[1][$CellContext`Varpis][t] + \
+Derivative[1][$CellContext`Varpis][t]^2 + 
+         (4*(H*$CellContext`stigma*(-1 + $CellContext`Varpis[t]^2) + \
+$CellContext`stigma*$CellContext`Varpis[t]*
+              Derivative[1][$CellContext`Varpis][t])^2)/($CellContext`stigma \
+- $CellContext`Varpis[t]^2))/
+        (4*$CellContext`stigma - $CellContext`Varpis[t]^2)}} /. \
+$CellContext`stigma -> 1 /. mups2 -> 4/3]]
+(* ===== IN[20] bc=80 ===== *)
+HoldForm[aa]
+(* ===== IN[21] bc=5984 ===== *)
+HoldForm[rule = {Varpis :> (Varpis[Tau[#1]] & ), aa :> (aa[Tau[#1]] & ), \
+rhom :> (rhom[Tau[#1]] & ), rhor :> (rhor[Tau[#1]] & ), 
+    rhoL :> (rhoL[Tau[#1]] & )}; ]
+(* ===== IN[22] bc=3992 ===== *)
+HoldForm[E1 = FullSimplify[EqVarpiFinal /. rule /. Derivative[2][Tau][t] -> \
+D[1/aa[Tau[t]], t] /. 
+     Derivative[1][Tau][t] -> 1/aa[Tau] /. Tau[t] -> Tau]]
+(* ===== IN[23] bc=3992 ===== *)
+HoldForm[F1 = FullSimplify[EqnFinal /. rule /. Derivative[2][Tau][t] -> \
+D[1/aa[Tau[t]], t] /. 
+     Derivative[1][Tau][t] -> 1/aa[Tau] /. Tau[t] -> Tau]]
+(* ===== IN[24] bc=3992 ===== *)
+HoldForm[F2 = FullSimplify[EqaFinal /. rule /. Derivative[2][Tau][t] -> \
+D[1/aa[Tau[t]], t] /. 
+     Derivative[1][Tau][t] -> 1/aa[Tau] /. Tau[t] -> Tau]]
+(* ===== IN[25] bc=6480 ===== *)
+HoldForm[topython = {Tau -> tau, OmegaL0 -> OmL, OmegaM0 -> omega_m, OmegaR0 \
+-> OmR, alps -> a0, H0 -> h*100, stigma -> stigma, 
+   Derivative[1][$CellContext`aa][$CellContext`Tau] -> da, \
+Derivative[1][$CellContext`Varpis][$CellContext`Tau] -> dcp, 
+   Varpis[Tau] -> cp, aa[Tau] -> a}]
+(* ===== IN[26] bc=216 ===== *)
+HoldForm[Get["Wolfpy`"]]
+(* ===== IN[27] bc=448 ===== *)
+HoldForm[ToPythonString[F1 /. topython]]
+(* ===== IN[28] bc=5992 ===== *)
+HoldComplete[EqAlg = E1 /. {Derivative[1][Varpis][Tau] -> 0, \
+Derivative[2][Varpis][Tau] -> 0}, Null, 
+ EqAlg2 = FullSimplify[EqAlg /. rule /. Derivative[2][Tau][t] -> \
+D[1/aa[Tau[t]], t] /. Derivative[1][Tau][t] -> 1/aa[Tau] /. 
+    Tau[t] -> Tau]]
+(* ===== IN[29] bc=80 ===== *)
+HoldForm[E1]
+(* ===== IN[30] bc=616 ===== *)
+HoldForm[EqDer = FullSimplify[E1 - EqAlg]]
+(* ===== IN[31] bc=57368 ===== *)
+HoldForm[knownRules = {a1 -> \
+(2*$CellContext`H0*Sqrt[$CellContext`OmegaR0]*Sqrt[$CellContext`stigma])/
+     ($CellContext`alps*Sqrt[mups2]*Sqrt[-1 + 4*$CellContext`stigma]), 
+   a2 -> \
+($CellContext`H0^2*$CellContext`OmegaM0)/(4*$CellContext`alps*mups2), 
+   a3 -> \
+($CellContext`H0^3*$CellContext`OmegaM0^2*Sqrt[$CellContext`stigma]*Sqrt[-1 \
++ 4*$CellContext`stigma]*
+      (-2 + $CellContext`stigma*(5 + \
+24*$CellContext`stigma)))/(64*$CellContext`alps*mups2^(3/2)*Sqrt[$CellContex\
+t`OmegaR0]*
+      (-1 + $CellContext`stigma)*(-3 + $CellContext`stigma + \
+8*$CellContext`stigma^2)), 
+   a4 -> ($CellContext`H0^4*$CellContext`OmegaM0^3*(-1 + \
+4*$CellContext`stigma)*
+      (-6 + $CellContext`stigma*(31 + $CellContext`stigma*(357 + \
+2*$CellContext`stigma*
+            (-123 + 5*$CellContext`stigma*(-151 + \
+24*$CellContext`stigma))))))/(512*$CellContext`alps*mups2^2*
+      $CellContext`OmegaR0*(-1 + $CellContext`stigma)^2*(-3 + \
+$CellContext`stigma + 8*$CellContext`stigma^2)*
+      (-6 + $CellContext`stigma + 20*$CellContext`stigma^2)), 
+   v1 -> -(($CellContext`H0*$CellContext`OmegaM0*Sqrt[-1 + \
+4*$CellContext`stigma])/(8*Sqrt[mups2]*Sqrt[$CellContext`OmegaR0]*
+       Sqrt[$CellContext`stigma])), v2 -> \
+-((3*$CellContext`H0^2*$CellContext`OmegaM0^2*(-1 + 4*$CellContext`stigma)*
+       (2 + $CellContext`stigma*(-2 + \
+3*$CellContext`stigma)))/(128*mups2*$CellContext`OmegaR0*(-1 + \
+$CellContext`stigma)*
+       $CellContext`stigma*(-3 + $CellContext`stigma + \
+8*$CellContext`stigma^2))), 
+   v3 -> -(($CellContext`H0^3*$CellContext`OmegaM0^3*(-1 + \
+4*$CellContext`stigma)^(3/2)*
+       (-36 + $CellContext`stigma*(72 + $CellContext`stigma*(175 + \
+$CellContext`stigma*(-225 + 4*$CellContext`stigma*(-180 + 
+                $CellContext`stigma*(95 + \
+48*$CellContext`stigma)))))))/(1024*mups2^(3/2)*$CellContext`OmegaR0^(3/2)*
+       (-1 + $CellContext`stigma)^2*$CellContext`stigma^(3/2)*(-3 + \
+$CellContext`stigma + 8*$CellContext`stigma^2)*
+       (-6 + $CellContext`stigma + 20*$CellContext`stigma^2))), r -> \
+stigma2*((4*stigma2 - 1)/(4*stigma2^2 - 1)), 
+   B -> ((4*stigma - 1)/a1)*A}]
+(* ===== IN[32] bc=5632 ===== *)
+HoldComplete[aAsym = a1*Tau + a2*Tau^2 + a3*Tau^3 + a4*Tau^4 + A*Tau^(1 + r) \
+/. knownRules /. stigma2 -> 0.9, Null, 
+ vAsym = 1 + v1*Tau + v2*Tau^2 + v3*Tau^3 + B*Tau^r /. knownRules /. stigma2 \
+-> 0.9]
+(* ===== IN[33] bc=10472 ===== *)
+HoldComplete[algEarly = EqAlg /. {aa[Tau] -> aAsym, Derivative[1][aa][Tau] \
+-> D[aAsym, Tau], 
+    Derivative[2][aa][Tau] -> D[aAsym, {Tau, 2}], Varpis[Tau] -> vAsym}, \
+Null, 
+ derEarly = EqDer /. {aa[Tau] -> aAsym, Derivative[1][aa][Tau] -> D[aAsym, \
+Tau], Derivative[2][aa][Tau] -> D[aAsym, {Tau, 2}], 
+    Varpis[Tau] -> vAsym, Derivative[1][Varpis][Tau] -> D[vAsym, Tau], \
+Derivative[2][Varpis][Tau] -> D[vAsym, {Tau, 2}]}]
+(* ===== IN[34] bc=2912 ===== *)
+HoldForm[assumptions = (-1 + Sqrt[33])/8 < stigma < 1 && H0 > 0 && OmegaR0 > \
+0 && OmegaM0 > 0 && mups2 > 0 && Tau > 0; ]
+(* ===== IN[35] bc=1504 ===== *)
+HoldForm[FullSimplify[Assuming[assumptions, Series[algEarly, {Tau, 0, 0}]]]]
+(* ===== IN[36] bc=3504 ===== *)
+HoldComplete[algSeries = Assuming[assumptions, FullSimplify[Series[algEarly, \
+{Tau, 0, 0}]]], Null, 
+ derSeries = Assuming[assumptions, FullSimplify[Series[derEarly, {Tau, 0, \
+0}]]]]
+(* ===== IN[37] bc=7752 ===== *)
+HoldComplete[q = (1 - stigma)/(4*stigma^2 - 1), Null, aZ = a1*Tau + a2*Tau^2 \
++ a3*Tau^3 + a4*Tau^4 + A*Tau^2*z /. knownRules, 
+ Null, vZ = 1 + v1*Tau + v2*Tau^2 + v3*Tau^3 + B*Tau*z /. B -> ((4*stigma - \
+1)/a1)*A /. knownRules]
+(* ===== IN[38] bc=2456 ===== *)
+HoldComplete[wiZ = 1/(3*(1 + (OmegaM0/OmegaR0)*aZ)), Null, epsZ = wiZ - 1/3]
+(* ===== IN[39] bc=1744 ===== *)
+HoldForm[xCorrZ = 1 - 3*((stigma - 1)/(8*stigma^2))*epsZ]
+(* ===== IN[40] bc=256 ===== *)
+HoldForm[vZ^2]
+(* ===== IN[41] bc=648 ===== *)
+HoldForm[D[vZ^2, z]]
+(* ===== IN[42] bc=2888 ===== *)
+HoldComplete[lhsZ1 = FullSimplify[D[vZ^2, z] /. z -> 0], Null, rhsZ1 = \
+FullSimplify[D[xCorrZ, z] /. z -> 0]]
+(* ===== IN[43] bc=3768 ===== *)
+HoldForm[matchLeading = FullSimplify[Limit[(lhsZ1 - rhsZ1)/Tau, Tau -> 0, \
+Direction -> "FromAbove"], 
+   Assumptions -> 1/2 < stigma < 1 && H0 > 0 && OmegaR0 > 0 && OmegaM0 > 0 \
+&& mups2 > 0]]
+(* ===== IN[44] bc=2216 ===== *)
+HoldForm[wiZ = 1/3 - (2/3)*aZ*(Dtau[Dtau[aZ]]/Dtau[aZ]^2)]
+(* ===== IN[45] bc=2216 ===== *)
+HoldForm[wiZ = 1/3 - (2/3)*aZ*(Dtau[Dtau[aZ]]/Dtau[aZ]^2)]
+(* ===== IN[46] bc=1744 ===== *)
+HoldForm[xCorrZ = 1 - 3*((stigma - 1)/(8*stigma^2))*epsZ]
+(* ===== IN[47] bc=2304 ===== *)
+HoldComplete[lhsZ1 = D[vZ^2, z] /. z -> 0, Null, rhsZ1 = D[xCorrZ, z] /. z \
+-> 0]
+(* ===== IN[48] bc=3512 ===== *)
+HoldForm[matchLeading = FullSimplify[Limit[(lhsZ1 - rhsZ1)/Tau, Tau -> 0, \
+Direction -> "FromAbove"], 
+   Assumptions -> 1/2 < stigma < 1 && H0 > 0 && OmegaR0 > 0 && mups2 > 0]]
+(* ===== IN[49] bc=80 ===== *)
+HoldForm[Null]
+(* ===== IN[50] bc=2832 ===== *)
+HoldComplete[Hi = 2/(3*(1 + wi)*t), Null, HH[t_] := \
+Derivative[1][aa][t]/aa[t], Null, FullSimplify[EqVarpiFinal]]
+(* ===== IN[51] bc=6928 ===== *)
+HoldForm[FullSimplify[EqVarpiFinal /. Derivative[1][Varpis][t] -> 0 /. \
+Derivative[2][Varpis][t] -> 0 /. Varpis[t] -> Varpis /. 
+     Flatten[Solve[Derivative[1][HH][t] == D[Hi, t], \
+Derivative[2][$CellContext`aa][t]]] /. 
+    Derivative[1][$CellContext`aa][t] -> Hi*aa[t] /. Varpis -> Sqrt[x]]]
+(* ===== IN[52] bc=7048 ===== *)
+HoldForm[Eqsolve = FullSimplify[EqVarpiFinal /. Derivative[1][Varpis][t] -> \
+0 /. Derivative[2][Varpis][t] -> 0 /. 
+       Varpis[t] -> Varpis /. Flatten[Solve[Derivative[1][HH][t] == D[Hi, \
+t], Derivative[2][$CellContext`aa][t]]] /. 
+     Derivative[1][$CellContext`aa][t] -> Hi*aa[t] /. Varpis -> Sqrt[x]]]
+(* ===== IN[53] bc=824 ===== *)
+HoldForm[xRoots = Solve[Eqsolve == 0, x]]
+(* ===== IN[54] bc=2560 ===== *)
+HoldComplete[xL[wi_, stigma_] = x /. xRoots[[2]], Null, xR[wi_, stigma_] = x \
+/. xRoots[[3]]]
+(* ===== IN[55] bc=3064 ===== *)
+HoldForm[xPhys[wi_, stigma_] := Piecewise[{{xR[wi, stigma], stigma < 1}, \
+{xL[wi, stigma], stigma > 1}}]]
+(* ===== IN[56] bc=2168 ===== *)
+HoldForm[Series[xR[1/3 + eps, stigma], {eps, 0, 3}, Assumptions -> 0 < \
+stigma < 1]]
+(* ===== IN[57] bc=2088 ===== *)
+HoldForm[Series[xL[1/3 + eps, stigma], {eps, 0, 3}, Assumptions -> stigma > \
+1]]
+(* ===== IN[58] bc=4840 ===== *)
+HoldComplete[vR = Assuming[0 < stigma < 1, FullSimplify[Sqrt[xR[1/3 + eps, \
+stigma]]]], Null, 
+ vL = Assuming[stigma > 1, FullSimplify[Sqrt[xL[1/3 + eps, stigma]]]]]
+(* ===== IN[59] bc=3936 ===== *)
+HoldForm[Series[FullSimplify[xR[1/3 + eps, stigma] - xL[1/3 + eps, stigma], \
+Assumptions -> {0 < stigma < 1, eps < 0}], 
+  {eps, 0, 5}]]
+(* ===== IN[60] bc=3112 ===== *)
+HoldForm[FullSimplify[xR[1/3 + eps, stigma] - xL[1/3 + eps, stigma], \
+Assumptions -> {0 < stigma < 1, eps < 0}]]
+(* ===== IN[61] bc=1344 ===== *)
+HoldForm[xsol = FullSimplify[x /. Solve[Eqsolve == 0, x]]]
+(* ===== IN[62] bc=968 ===== *)
+HoldForm[FullSimplify[xsol /. wi -> 1/3 + \[Epsilon]]]
+(* ===== IN[63] bc=3456 ===== *)
+HoldComplete[xMinus = xsol[[2]] /. wi -> 1/3 + \[Epsilon]; , Null, xPlus = \
+xsol[[3]] /. wi -> 1/3 + \[Epsilon]; ]
+(* ===== IN[64] bc=1848 ===== *)
+HoldForm[PowerExpand[Series[FullSimplify[xMinus, Assumptions -> stigma > 1], \
+{\[Epsilon], 0, 1}]]]
+(* ===== IN[65] bc=6200 ===== *)
+HoldForm[FullSimplify[($CellContext`stigma*(-3 + 6*$CellContext`stigma + \
+6*$CellContext`stigma^2 - 
+     (3*(-1 + $CellContext`stigma)*(-1 + \
+2*$CellContext`stigma^2))/$CellContext`stigma))/(3*(-1 + \
+4*$CellContext`stigma^2))]]
+(* ===== IN[66] bc=2104 ===== *)
+HoldForm[PowerExpand[Series[FullSimplify[xPlus, Assumptions -> 1/2 < stigma \
+< 1], {\[Epsilon], 0, 1}]]]
+(* ===== IN[67] bc=2640 ===== *)
+HoldForm[1 - (3*(-1 + \
+$CellContext`stigma)*\[Epsilon])/(8*$CellContext`stigma^2) + \
+SeriesData[$CellContext`\[Epsilon], 0, {}, 0, 2, 1]]
+(* ===== IN[68] bc=1352 ===== *)
+HoldForm[Limit[xsol /. stigma -> 1 - 0.00001, wi -> 1/3]]
+(* ===== IN[69] bc=8152 ===== *)
+HoldForm[Limit[(-2*Sqrt[(-1 + \[Stigma])^2*(2 - 6*wi + (\[Stigma] + \
+3*wi*\[Stigma])^2)] + (1 + 2*(-3 + \[Stigma])*\[Stigma] + wi*(-3 + \
+6*\[Stigma]*(1 + \[Stigma]))))/
+    (4*(-1 + 3*wi)*(-1 + 4*\[Stigma]^2)) /. \[Stigma] -> 1.5, wi -> 1/3]]
+(* ===== IN[70] bc=1784 ===== *)
+HoldForm[Limit[xsol[[2]] /. stigma -> 100001/100000, wi -> 1/3]]
+(* ===== IN[71] bc=1784 ===== *)
+HoldForm[Limit[xsol[[2]] /. stigma -> 100001/100000, wi -> 1/3]]
+(* ===== IN[72] bc=4528 ===== *)
+HoldComplete[assLess = 1/2 < stigma < 1 && eps < 0, Null, xRless = \
+FullSimplify[xR[1/3 + eps, stigma], Assumptions -> assLess], 
+ Null, xLless = FullSimplify[xL[1/3 + eps, stigma], Assumptions -> assLess]]
+(* ===== IN[73] bc=1024 ===== *)
+HoldForm[Series[xRless, {eps, 0, 3}]]
+(* ===== IN[74] bc=904 ===== *)
+HoldForm[Series[xLless, {eps, 0, 1}]]
+(* ===== IN[75] bc=904 ===== *)
+HoldForm[Refine[%, 1/2 < stigma < 1]]
+(* ===== IN[76] bc=2304 ===== *)
+HoldComplete[aAns = a1*Tau + lam*A*Tau^(1 + r), Null, vAns = 1 + \
+lam*B*Tau^r]
+(* ===== IN[77] bc=7632 ===== *)
+HoldForm[rules = {aa[Tau] -> aAns, Derivative[1][aa][Tau] -> D[aAns, Tau], \
+Derivative[2][aa][Tau] -> D[aAns, {Tau, 2}], 
+    Varpis[Tau] -> vAns, Derivative[1][Varpis][Tau] -> D[vAns, Tau], \
+Derivative[2][Varpis][Tau] -> D[vAns, {Tau, 2}]}; ]
+(* ===== IN[78] bc=472 ===== *)
+HoldForm[pertA = F1 /. rules]
+(* ===== IN[79] bc=864 ===== *)
+HoldForm[pertB = Diffs[[2]] /. rules]
+(* ===== IN[80] bc=3056 ===== *)
+HoldForm[Diffs = FullSimplify[Flatten[SolveValues[{F2 == 0, E1 == 0}, \
+{Derivative[2][aa][Tau], Derivative[2][Varpis][Tau]}]]]]
+(* ===== IN[81] bc=3864 ===== *)
+HoldComplete[linA = FullSimplify[Coefficient[Normal[Series[pertA, {lam, 0, \
+1}]], lam]], Null, 
+ linV = FullSimplify[Coefficient[Normal[Series[pertB, {lam, 0, 1}]], lam]]]
+(* ===== IN[82] bc=3688 ===== *)
+HoldComplete[leadA = FullSimplify[linA/Tau^(r - 1) /. Tau -> 0], Null, leadV \
+= FullSimplify[linV/Tau^(r - 2) /. Tau -> 0]]
+(* ===== IN[83] bc=2512 ===== *)
+HoldForm[radRule = H0^2*OmegaR0 -> a1^2*mups2*((4*stigma - 1)/(4*stigma))]
+(* ===== IN[84] bc=1424 ===== *)
+HoldComplete[leadAs = Factor[leadA /. radRule], Null, leadVs = Factor[leadV \
+/. radRule]]
+(* ===== IN[85] bc=872 ===== *)
+HoldForm[FullSimplify[Solve[leadAs == 0, B]]]
+(* ===== IN[86] bc=1872 ===== *)
+HoldComplete[Brule = B -> (4*stigma - 1)*(A/a1), Null, Factor[leadVs /. \
+Brule]]
+(* ===== IN[87] bc=6616 ===== *)
+HoldForm[FullSimplify[
+  Solve[-((2*A*(-1 + 4*$CellContext`stigma)*(-r + $CellContext`stigma - \
+4*$CellContext`stigma^2 + 4*r*$CellContext`stigma^2))/
+      (a1*(-1 + 2*$CellContext`stigma)*(1 + 2*$CellContext`stigma))) == 0, \
+r]]]
+(* ===== IN[88] bc=2904 ===== *)
+HoldForm[($CellContext`stigma*(-1 + 4*$CellContext`stigma))/(-1 + \
+4*$CellContext`stigma^2) /. stigma -> 0.6]
+(* ===== IN[89] bc=4216 ===== *)
+HoldComplete[rrule = r -> stigma*((4*stigma - 1)/((2*stigma - 1)*(2*stigma + \
+1))), Null, Brule = B -> (4*stigma - 1)*(A/a1)]
+(* ===== IN[90] bc=5864 ===== *)
+HoldComplete[aNew = a1*Tau + a2*Tau^2 + A*Tau^(1 + r) + a3*Tau^3 + a4*Tau^4 \
+/. rrule /. Brule, Null, 
+ vNew = 1 + v1*Tau + B*Tau^r + v2*Tau^2 + v3*Tau^3 /. rrule /. Brule]
+(* ===== IN[91] bc=67696 ===== *)
+HoldForm[E11 = (1/(8*mups2*$CellContext`stigma*(-1 + \
+4*$CellContext`stigma^2)*$CellContext`aa[$CellContext`Tau]^2*
+     $CellContext`Varpis[$CellContext`Tau]*($CellContext`stigma - \
+$CellContext`Varpis[$CellContext`Tau]^2)^2))*
+   \
+(4*$CellContext`H0^2*$CellContext`OmegaR0*$CellContext`stigma*($CellContext`\
+stigma - $CellContext`Varpis[$CellContext`Tau]^2)^
+      2*($CellContext`stigma - 4*$CellContext`stigma^2 + (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^
+        2) - \
+12*$CellContext`H0^2*$CellContext`OmegaL0*$CellContext`stigma*$CellContext`a\
+a[$CellContext`Tau]^4*
+     ($CellContext`stigma - \
+$CellContext`Varpis[$CellContext`Tau]^2)^2*($CellContext`stigma - \
+4*$CellContext`stigma^2 + 
+      (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^2) - \
+mups2*$CellContext`Varpis[$CellContext`Tau]^2*
+     ((5 - 8*$CellContext`stigma)*$CellContext`stigma + (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^2)*
+     ((7 - 4*$CellContext`stigma)*$CellContext`stigma^2 + \
+2*$CellContext`stigma*
+       (1 + 2*(-3 + \
+$CellContext`stigma)*$CellContext`stigma)*$CellContext`Varpis[$CellContext`T\
+au]^2 + 
+      (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^4)*Derivative\
+[1][$CellContext`aa][$CellContext`Tau]^
+      2 - \
+2*mups2*$CellContext`aa[$CellContext`Tau]*$CellContext`Varpis[$CellContext`T\
+au]*
+     ($CellContext`stigma^3*(-1 + 16*$CellContext`stigma*(-2 + \
+3*$CellContext`stigma)) + 
+      $CellContext`stigma^2*(11 - 16*$CellContext`stigma*(1 + \
+$CellContext`stigma*(-1 + 2*$CellContext`stigma)))*
+       $CellContext`Varpis[$CellContext`Tau]^2 + $CellContext`stigma*(-1 + \
+2*$CellContext`stigma)*(1 + 2*$CellContext`stigma)*
+       (11 + 4*(-4 + \
+$CellContext`stigma)*$CellContext`stigma)*$CellContext`Varpis[$CellContext`T\
+au]^4 + 
+      (1 - \
+4*$CellContext`stigma^2)^2*$CellContext`Varpis[$CellContext`Tau]^6)*Derivati\
+ve[1][$CellContext`aa][$CellContext`Tau]*
+     Derivative[1][$CellContext`Varpis][$CellContext`Tau] + \
+mups2*$CellContext`aa[$CellContext`Tau]^2*
+     ($CellContext`stigma^3 + 4*$CellContext`stigma^4 - \
+32*$CellContext`stigma^5 + 
+      $CellContext`stigma^2*(-3 + 8*$CellContext`stigma + \
+16*$CellContext`stigma^3)*$CellContext`Varpis[$CellContext`Tau]^2 - 
+      $CellContext`stigma*(-1 + 2*$CellContext`stigma)*(1 + \
+2*$CellContext`stigma)*
+       (3 + 4*(-3 + \
+$CellContext`stigma)*$CellContext`stigma)*$CellContext`Varpis[$CellContext`T\
+au]^4 - 
+      (1 - \
+4*$CellContext`stigma^2)^2*$CellContext`Varpis[$CellContext`Tau]^6)*
+     Derivative[1][$CellContext`Varpis][$CellContext`Tau]^2)]
+(* ===== IN[92] bc=80 ===== *)
+HoldForm[F1]
+(* ===== IN[93] bc=5952 ===== *)
+HoldComplete[q = (1 - stigma)/(4*stigma^2 - 1); , Null, aNew = a1*Tau + \
+a2*Tau^2 + A*Tau^2*z + a3*Tau^3 + a4*Tau^4, Null, 
+ vNew = 1 + v1*Tau + B*Tau*z + v2*Tau^2 + v3*Tau^3]
+(* ===== IN[94] bc=1832 ===== *)
+HoldComplete[Brule = B -> (4*stigma - 1)*(A/a1), Null, vNew = vNew /. Brule]
+(* ===== IN[95] bc=2136 ===== *)
+HoldForm[Dtau[expr_] := D[expr, Tau] + (q*(z/Tau))*D[expr, z]]
+(* ===== IN[96] bc=472 ===== *)
+HoldForm[Dtau[Tau*z]]
+(* ===== IN[97] bc=2504 ===== *)
+HoldComplete[apNew = Dtau[aNew], Null, appNew = Dtau[Dtau[aNew]], Null, \
+vpNew = Dtau[vNew], Null, vppNew = Dtau[Dtau[vNew]]]
+(* ===== IN[98] bc=3832 ===== *)
+HoldForm[rulesNew = {aa[Tau] -> aNew, Derivative[1][aa][Tau] -> apNew, \
+Derivative[2][aa][Tau] -> appNew, Varpis[Tau] -> vNew, 
+   Derivative[1][Varpis][Tau] -> vpNew, Derivative[2][Varpis][Tau] -> \
+vppNew}]
+(* ===== IN[99] bc=704 ===== *)
+HoldForm[F1z = Together[F1 /. rulesNew]]
+(* ===== IN[100] bc=696 ===== *)
+HoldForm[F1num = Expand[Numerator[F1z]]]
+(* ===== IN[101] bc=1016 ===== *)
+HoldForm[termsF1 = CoefficientRules[F1num, {Tau, z}]]
+(* ===== IN[102] bc=4688 ===== *)
+HoldForm[orderedF1 = ({#1[[1]], FullSimplify[#1[[1,1]] + #1[[1,2]]*q, \
+Assumptions -> 1/2 < stigma < 1], Factor[#1[[2]]]} & ) /@ 
+   termsF1]
+(* ===== IN[103] bc=1008 ===== *)
+HoldForm[SortBy[orderedF1, #1[[2]] & ]]
+(* ===== IN[104] bc=2384 ===== *)
+HoldComplete[sortedF1 = SortBy[orderedF1, #1[[2]] & ], Null, c0F1 = \
+Factor[sortedF1[[1,3]]]]
+(* ===== IN[105] bc=832 ===== *)
+HoldForm[FullSimplify[Solve[c0F1 == 0, a1]]]
+(* ===== IN[106] bc=3376 ===== *)
+HoldForm[a1rule = a1 -> \
+(2*$CellContext`H0*Sqrt[$CellContext`OmegaR0]*Sqrt[$CellContext`stigma])/
+    Sqrt[mups2*(-1 + 4*$CellContext`stigma)]]
+(* ===== IN[107] bc=576 ===== *)
+HoldForm[knownRules = {a1rule}; ]
+(* ===== IN[108] bc=704 ===== *)
+HoldForm[E11sub = E11 /. rulesNew /. knownRules]
+(* ===== IN[109] bc=648 ===== *)
+HoldForm[E11z0 = E11sub /. z -> 0]
+(* ===== IN[110] bc=1088 ===== *)
+HoldForm[FullSimplify[Series[E11z0, {Tau, 0, 1}]]]
+(* ===== IN[111] bc=1040 ===== *)
+HoldForm[E11z1 = D[E11sub, z] /. z -> 0]
+(* ===== IN[112] bc=1600 ===== *)
+<<ERR>>
+(* ===== IN[113] bc=1920 ===== *)
+HoldForm[E11z2 = (1/2)*D[E11sub, {z, 2}] /. z -> 0]
+(* ===== IN[114] bc=3016 ===== *)
+HoldForm[cE11z1 = FullSimplify[Limit[Tau*E11z1, Tau -> 0, Direction -> \
+"FromAbove", 
+    Assumptions -> 1/2 < stigma < 1 && H0 > 0 && OmegaR0 > 0 && mups2 > 0]]]
+(* ===== IN[115] bc=3440 ===== *)
+HoldComplete[Bsol = Solve[cE11z1 == 0, B][[1]], Null, FullSimplify[B /. \
+Bsol, 
+  Assumptions -> 1/2 < stigma < 1 && H0 > 0 && OmegaR0 > 0 && mups2 > 0]]
+(* ===== IN[116] bc=3624 ===== *)
+HoldForm[FullSimplify[(B /. Bsol) - (4*stigma - 1)*(A/a1) /. a1rule, 
+  Assumptions -> 1/2 < stigma < 1 && H0 > 0 && OmegaR0 > 0 && mups2 > 0]]
+(* ===== IN[117] bc=5624 ===== *)
+HoldComplete[aNew = a1*Tau + a2*Tau^2 + a3*Tau^3 + a4*Tau^4 + A*Tau^2*z + \
+A1*Tau^3*z; , Null, 
+ vNew = 1 + v1*Tau + v2*Tau^2 + v3*Tau^3 + B*Tau*z + B1*Tau^2*z; ]
+(* ===== IN[118] bc=1296 ===== *)
+HoldForm[B -> (4*stigma - 1)*(A/a1)]
+(* ===== IN[119] bc=2128 ===== *)
+HoldComplete[F1z1 = D[F1sub, z] /. z -> 0, Null, E11z1 = D[E11sub, z] /. z \
+-> 0]
+(* ===== IN[120] bc=632 ===== *)
+HoldForm[$CellContext`alps = 1]
+(* ===== IN[121] bc=54312 ===== *)
+HoldForm[knownRules = {a1 -> \
+(2*$CellContext`H0*Sqrt[$CellContext`OmegaR0]*Sqrt[$CellContext`stigma])/
+     ($CellContext`alps*Sqrt[mups2]*Sqrt[-1 + 4*$CellContext`stigma]), 
+   a2 -> \
+($CellContext`H0^2*$CellContext`OmegaM0)/(4*$CellContext`alps*mups2), 
+   a3 -> \
+($CellContext`H0^3*$CellContext`OmegaM0^2*Sqrt[$CellContext`stigma]*Sqrt[-1 \
++ 4*$CellContext`stigma]*
+      (-2 + $CellContext`stigma*(5 + \
+24*$CellContext`stigma)))/(64*$CellContext`alps*mups2^(3/2)*Sqrt[$CellContex\
+t`OmegaR0]*
+      (-1 + $CellContext`stigma)*(-3 + $CellContext`stigma + \
+8*$CellContext`stigma^2)), 
+   a4 -> ($CellContext`H0^4*$CellContext`OmegaM0^3*(-1 + \
+4*$CellContext`stigma)*
+      (-6 + $CellContext`stigma*(31 + $CellContext`stigma*(357 + \
+2*$CellContext`stigma*
+            (-123 + 5*$CellContext`stigma*(-151 + \
+24*$CellContext`stigma))))))/(512*$CellContext`alps*mups2^2*
+      $CellContext`OmegaR0*(-1 + $CellContext`stigma)^2*(-3 + \
+$CellContext`stigma + 8*$CellContext`stigma^2)*
+      (-6 + $CellContext`stigma + 20*$CellContext`stigma^2)), 
+   v1 -> -(($CellContext`H0*$CellContext`OmegaM0*Sqrt[-1 + \
+4*$CellContext`stigma])/(8*Sqrt[mups2]*Sqrt[$CellContext`OmegaR0]*
+       Sqrt[$CellContext`stigma])), v2 -> \
+-((3*$CellContext`H0^2*$CellContext`OmegaM0^2*(-1 + 4*$CellContext`stigma)*
+       (2 + $CellContext`stigma*(-2 + \
+3*$CellContext`stigma)))/(128*mups2*$CellContext`OmegaR0*(-1 + \
+$CellContext`stigma)*
+       $CellContext`stigma*(-3 + $CellContext`stigma + \
+8*$CellContext`stigma^2))), 
+   v3 -> -(($CellContext`H0^3*$CellContext`OmegaM0^3*(-1 + \
+4*$CellContext`stigma)^(3/2)*
+       (-36 + $CellContext`stigma*(72 + $CellContext`stigma*(175 + \
+$CellContext`stigma*(-225 + 4*$CellContext`stigma*(-180 + 
+                $CellContext`stigma*(95 + \
+48*$CellContext`stigma)))))))/(1024*mups2^(3/2)*$CellContext`OmegaR0^(3/2)*
+       (-1 + $CellContext`stigma)^2*$CellContext`stigma^(3/2)*(-3 + \
+$CellContext`stigma + 8*$CellContext`stigma^2)*
+       (-6 + $CellContext`stigma + 20*$CellContext`stigma^2)))}]
+(* ===== IN[122] bc=75480 ===== *)
+HoldForm[(If[ !ValueQ[F1] ||  !ValueQ[E11], Print["ERROR: Define F1 and E11 \
+first."]; Abort[]; ]; )*
+  (If[ !ValueQ[knownRules] ||  !ListQ[knownRules] || Length[knownRules] < 7, \
+    Print["ERROR: Define knownRules = \
+{a1->...,a2->...,a3->...,a4->...,v1->...,v2->...,v3->...};"]; Abort[]; ]; )*
+  (ClearAll[z, qExpr, rExpr, Dtau, A, A1, B, B1, aBGtest, vBGtest, aNewTest, \
+vNewTest, rulesFrac, F1subFrac, E11subFrac, F1z1, 
+    E11z1, checkF1Leading, checkE11Leading, cF1Next, cE11Next, eqF1Next, \
+eqE11Next, solA1B1, condA, assumpFrac, simpFrac, 
+    BruleFrac]; )*(assumpFrac = Element[{stigma, H0, OmegaR0, OmegaM0, \
+OmegaL0, Mp, mups2, A, A1, B1}, Reals] && 
+     1/2 < stigma < 1 && H0 > 0 && OmegaR0 > 0 && OmegaM0 > 0 && OmegaL0 >= \
+0 && mups2 > 0 && Tau > 0; )*
+  (simpFrac[expr_] := FullSimplify[expr, Assumptions -> assumpFrac]; \
+)*(Print["Using knownRules:"]; )*(Print[knownRules]; )*
+  (rExpr = simpFrac[stigma*((4*stigma - 1)/((2*stigma - 1)*(2*stigma + \
+1)))]; )*(qExpr = simpFrac[rExpr - 1]; )*
+  (Print["r = ", rExpr]; )*(Print["q = ", qExpr]; )*(Dtau[expr_] := D[expr, \
+Tau] + (qExpr*(z/Tau))*D[expr, z]; )*
+  (aBGtest = a1*Tau + a2*Tau^2 + a3*Tau^3 + a4*Tau^4; )*(vBGtest = 1 + \
+v1*Tau + v2*Tau^2 + v3*Tau^3; )*
+  (aNewTest = a1*Tau + a2*Tau^2 + a3*Tau^3 + a4*Tau^4 + A*Tau^2*z + \
+A1*Tau^3*z; )*
+  (vNewTest = 1 + v1*Tau + v2*Tau^2 + v3*Tau^3 + B*Tau*z + B1*Tau^2*z; \
+)*(Print["aNewTest = ", aNewTest]; )*
+  (Print["vNewTest = ", vNewTest]; )*(BruleFrac = B -> ((4*stigma - \
+1)/a1)*A; )*
+  (rulesFrac = {aa[Tau] -> aNewTest, Derivative[1][aa][Tau] -> \
+Dtau[aNewTest], Derivative[2][aa][Tau] -> Dtau[Dtau[aNewTest]], 
+     Varpis[Tau] -> vNewTest, Derivative[1][Varpis][Tau] -> Dtau[vNewTest], \
+Derivative[2][Varpis][Tau] -> 
+      Dtau[Dtau[vNewTest]]}; )*(F1subFrac = F1 /. rulesFrac /. BruleFrac /. \
+knownRules; )*
+  (E11subFrac = E11 /. rulesFrac /. BruleFrac /. knownRules; )*(F1z1 = \
+D[F1subFrac, z] /. z -> 0; )*
+  (E11z1 = D[E11subFrac, z] /. z -> 0; )*(Print["Extracted z^1 sector."]; )*
+  (checkF1Leading = simpFrac[Limit[F1z1, Tau -> 0, Direction -> \
+"FromAbove"]]; )*
+  (checkE11Leading = simpFrac[Limit[Tau*E11z1, Tau -> 0, Direction -> \
+"FromAbove"]]; )*
+  (Print["Leading z^1 check F1 = ", checkF1Leading]; )*(Print["Leading z^1 \
+check E11 = ", checkE11Leading]; )*
+  (cF1Next = simpFrac[Limit[F1z1/Tau, Tau -> 0, Direction -> "FromAbove"]]; \
+)*
+  (cE11Next = simpFrac[Limit[E11z1, Tau -> 0, Direction -> "FromAbove"]]; )*
+  (Print["Next z^1 coefficient F1 = ", Factor[cF1Next]]; )*(Print["Next z^1 \
+coefficient E11 = ", Factor[cE11Next]]; )*
+  (eqF1Next = cF1Next == 0; )*(eqE11Next = cE11Next == 0; )*
+  (solA1B1 = FullSimplify[Solve[{eqF1Next, eqE11Next}, {A1, B1}, Reals], \
+Assumptions -> assumpFrac]; )*
+  (Print["Solution for {A1,B1} = ", solA1B1]; )*
+  (condA = FullSimplify[Reduce[Exists[{A1, B1}, eqF1Next && eqE11Next], A, \
+Reals], Assumptions -> assumpFrac]; )*
+  (Print["Constraint on A = ", condA]; )*(If[TrueQ[condA], Print["A is not \
+fixed at this z^1 order."], 
+    Print["This order constrains A: ", condA]]; )*(Print["Done."]; )]
+(* ===== IN[123] bc=3168 ===== *)
+HoldComplete[EqAlg = EqVarpiFinal /. {Derivative[1][Varpis][t] -> 0, \
+Derivative[2][Varpis][t] -> 0}, Null, 
+ EqDer = Expand[EqVarpiFinal - EqAlg]]
+(* ===== IN[124] bc=3664 ===== *)
+HoldComplete[aseries[n_, \[Tau]_] = Sum[na[i]*Tau^i, {i, 1, n}]; , Null, \
+\[CurlyPi]series[n_, \[Tau]_] = 1 + Sum[n\[CurlyPi][i]*Tau^i, {i, 1, n}]]
+(* ===== IN[125] bc=2024 ===== *)
+HoldForm[ap = FullSimplify[PowerExpand[SolveValues[{F1 == 0}, \
+{Derivative[1][aa][Tau]}]]]]
+(* ===== IN[126] bc=4176 ===== *)
+HoldForm[apsol = ap /. $CellContext`aa[Tau] -> aseries[5, Tau] /. \
+Varpis[Tau] -> \[CurlyPi]series[5, Tau] /. 
+   Derivative[1][Varpis][Tau] -> D[\[CurlyPi]series[5, Tau], Tau]]
+(* ===== IN[127] bc=2736 ===== *)
+HoldForm[Collect[Series[D[aseries[5, Tau], Tau] - apsol[[1]], {Tau, 0, 5}], \
+Tau, Simplify]]
+(* ===== IN[128] bc=1062768 ===== *)
+<<SKIPPED huge cell, ByteCount=1062768>>
+(* ===== IN[129] bc=472 ===== *)
+HoldForm[aplist[[2]]]
+(* ===== IN[130] bc=80 ===== *)
+HoldForm[Null]
+(* ===== IN[131] bc=1040 ===== *)
+HoldForm[aplist2 = Drop[aplist, {2}]]
+(* ===== IN[132] bc=864 ===== *)
+HoldForm[aplist2[[1]] += na[1]]
+(* ===== IN[133] bc=3544 ===== *)
+HoldForm[asol = FullSimplify[Flatten[Solve[aplist2[[1 ;; 5]] == 0, {na[1], \
+na[2], na[3], na[4], na[5]}]]]]
+(* ===== IN[134] bc=1128 ===== *)
+HoldForm[asolseries[Tau_] = aseries[5, Tau] /. asol]
+(* ===== IN[135] bc=133432 ===== *)
+<<SKIPPED huge cell, ByteCount=133432>>
+(* ===== IN[136] bc=3056 ===== *)
+HoldForm[Diffs = FullSimplify[Flatten[SolveValues[{F2 == 0, E1 == 0}, \
+{Derivative[2][aa][Tau], Derivative[2][Varpis][Tau]}]]]]
+(* ===== IN[137] bc=68936 ===== *)
+HoldForm[FullSimplify[(1/(8*mups2*$CellContext`stigma*(-1 + \
+4*$CellContext`stigma^2)*$CellContext`aa[$CellContext`Tau]^2*
+      $CellContext`Varpis[$CellContext`Tau]*($CellContext`stigma - \
+$CellContext`Varpis[$CellContext`Tau]^2)^2))*
+    \
+(4*$CellContext`H0^2*$CellContext`OmegaR0*$CellContext`stigma*($CellContext`\
+stigma - $CellContext`Varpis[$CellContext`Tau]^2)^
+       2*($CellContext`stigma - 4*$CellContext`stigma^2 + (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^
+         2) - \
+12*$CellContext`H0^2*$CellContext`OmegaL0*$CellContext`stigma*$CellContext`a\
+a[$CellContext`Tau]^4*
+      ($CellContext`stigma - \
+$CellContext`Varpis[$CellContext`Tau]^2)^2*($CellContext`stigma - \
+4*$CellContext`stigma^2 + 
+       (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^2) - \
+mups2*$CellContext`Varpis[$CellContext`Tau]^2*
+      ((5 - 8*$CellContext`stigma)*$CellContext`stigma + (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^2)*
+      ((7 - 4*$CellContext`stigma)*$CellContext`stigma^2 + \
+2*$CellContext`stigma*
+        (1 + 2*(-3 + \
+$CellContext`stigma)*$CellContext`stigma)*$CellContext`Varpis[$CellContext`T\
+au]^2 + 
+       (-1 + \
+4*$CellContext`stigma^2)*$CellContext`Varpis[$CellContext`Tau]^4)*Derivative\
+[1][$CellContext`aa][$CellContext`Tau]^
+       2 - \
+2*mups2*$CellContext`aa[$CellContext`Tau]*$CellContext`Varpis[$CellContext`T\
+au]*
+      ($CellContext`stigma^3*(-1 + 16*$CellContext`stigma*(-2 + \
+3*$CellContext`stigma)) + 
+       $CellContext`stigma^2*(11 - 16*$CellContext`stigma*(1 + \
+$CellContext`stigma*(-1 + 2*$CellContext`stigma)))*
+        $CellContext`Varpis[$CellContext`Tau]^2 + $CellContext`stigma*(-1 + \
+2*$CellContext`stigma)*(1 + 2*$CellContext`stigma)*
+        (11 + 4*(-4 + \
+$CellContext`stigma)*$CellContext`stigma)*$CellContext`Varpis[$CellContext`T\
+au]^4 + 
+       (1 - \
+4*$CellContext`stigma^2)^2*$CellContext`Varpis[$CellContext`Tau]^6)*Derivati\
+ve[1][$CellContext`aa][$CellContext`Tau]*
+      Derivative[1][$CellContext`Varpis][$CellContext`Tau] + \
+mups2*$CellContext`aa[$CellContext`Tau]^2*
+      ($CellContext`stigma^3 + 4*$CellContext`stigma^4 - \
+32*$CellContext`stigma^5 + 
+       $CellContext`stigma^2*(-3 + 8*$CellContext`stigma + \
+16*$CellContext`stigma^3)*$CellContext`Varpis[$CellContext`Tau]^2 - 
+       $CellContext`stigma*(-1 + 2*$CellContext`stigma)*(1 + \
+2*$CellContext`stigma)*
+        (3 + 4*(-3 + \
+$CellContext`stigma)*$CellContext`stigma)*$CellContext`Varpis[$CellContext`T\
+au]^4 - 
+       (1 - \
+4*$CellContext`stigma^2)^2*$CellContext`Varpis[$CellContext`Tau]^6)*
+      Derivative[1][$CellContext`Varpis][$CellContext`Tau]^2) /. \
+Derivative[1][$CellContext`Varpis][$CellContext`Tau] -> 0]]
+(* ===== IN[138] bc=6312 ===== *)
+HoldForm[Diffs2 = Diffs[[2]] /. aa[Tau] -> asolseries[Tau] /. \
+Derivative[1][aa][Tau] -> Derivative[1][asolseries][Tau] /. 
+     Derivative[2][aa][Tau] -> Derivative[2][asolseries][Tau] /. Varpis[Tau] \
+-> \[CurlyPi]series[5, Tau] /. 
+   Derivative[1][Varpis][Tau] -> D[\[CurlyPi]series[5, Tau], Tau]]
+(* ===== IN[139] bc=2704 ===== *)
+HoldForm[Collect[Series[D[\[CurlyPi]series[5, Tau], {Tau, 2}] - Diffs2, \
+{Tau, 0, 5}], Tau, Simplify]]
+(* ===== IN[140] bc=2672 ===== *)
+HoldForm[\[CurlyPi]list = Refine[List @@ %, {gc > 0, n\[CurlyPi][0] > 1, H00 \
+> 0, \[Alpha] > 0}]]
+(* ===== IN[141] bc=3248 ===== *)
+HoldForm[\[CurlyPi]sol = FullSimplify[Flatten[Solve[\[CurlyPi]list[[2 ;; 5]] \
+== 0, {n\[CurlyPi][1], n\[CurlyPi][2], n\[CurlyPi][3], n\[CurlyPi][4]}]]]]
+(* ===== IN[142] bc=472 ===== *)
+HoldForm[\[CurlyPi]list[[1]]]
+(* ===== IN[143] bc=1472 ===== *)
+HoldForm[Flatten[Solve[\[CurlyPi]list[[1]] == 0, n\[CurlyPi][1]]]]
+(* ===== IN[144] bc=7256 ===== *)
+HoldForm[FullSimplify[{n\[CurlyPi][1] -> \
+($CellContext`H0*$CellContext`OmegaM0*(-1 + \
+$CellContext`stigma)*Sqrt[$CellContext`stigma]*
+      Sqrt[-1 + \
+4*$CellContext`stigma])/(Sqrt[mups2]*Sqrt[$CellContext`OmegaR0]*(3 - \
+5*$CellContext`stigma - 
+       12*$CellContext`stigma^2 + 32*$CellContext`stigma^3))}]]
+(* ===== IN[145] bc=472 ===== *)
+HoldForm[\[CurlyPi]list[[3]]]
+(* ===== IN[146] bc=33072 ===== *)
+HoldForm[FullSimplify[(1/(96*mups2*$CellContext`OmegaR0*(-1 + \
+$CellContext`stigma)*$CellContext`stigma*
+      (-1 + 4*$CellContext`stigma)^(3/2)*(-1 + 4*$CellContext`stigma^2)))*
+    (-9*$CellContext`H0^2*$CellContext`OmegaM0^2*(-1 + \
+$CellContext`stigma)^2*$CellContext`stigma*
+      (-1 + 4*$CellContext`stigma)^(3/2) + \
+4*$CellContext`H0*Sqrt[mups2]*$CellContext`OmegaM0*Sqrt[$CellContext`OmegaR0\
+]*
+      Sqrt[$CellContext`stigma]*(7 - 48*$CellContext`stigma + \
+57*$CellContext`stigma^2 + 224*$CellContext`stigma^3 - 
+       624*$CellContext`stigma^4 + 384*$CellContext`stigma^5)*n\[CurlyPi][1] \
++ 4*mups2*$CellContext`OmegaR0*
+      Sqrt[-1 + 4*$CellContext`stigma]*((-6 + 31*$CellContext`stigma + \
+55*$CellContext`stigma^2 - 296*$CellContext`stigma^3 - 
+         144*$CellContext`stigma^4 + \
+576*$CellContext`stigma^5)*n\[CurlyPi][1]^2 + 
+       3*(-3 + 4*$CellContext`stigma + 55*$CellContext`stigma^2 - \
+72*$CellContext`stigma^3 - 112*$CellContext`stigma^4 + 
+         128*$CellContext`stigma^5)*n\[CurlyPi][2])) /. 
+   {n\[CurlyPi][1] -> ($CellContext`H0*$CellContext`OmegaM0*(-1 + \
+$CellContext`stigma)*Sqrt[$CellContext`stigma]*
+       Sqrt[-1 + \
+4*$CellContext`stigma])/(Sqrt[mups2]*Sqrt[$CellContext`OmegaR0]*(3 - \
+5*$CellContext`stigma - 
+        12*$CellContext`stigma^2 + 32*$CellContext`stigma^3))}]]
+(* ===== IN[147] bc=17224 ===== *)
+HoldForm[Solve[(($CellContext`H0^2*$CellContext`OmegaM0^2*(-1 + \
+$CellContext`stigma)*(-1 + 4*$CellContext`stigma)*
+       (21 + $CellContext`stigma*(-14 + $CellContext`stigma*(-191 + \
+4*$CellContext`stigma*
+             (-41 + 48*$CellContext`stigma*(1 + \
+4*$CellContext`stigma))))))/(mups2*$CellContext`OmegaR0*
+       (3 + $CellContext`stigma*(1 + 4*$CellContext`stigma)*(-5 + \
+8*$CellContext`stigma))^2) + 
+     (12*(1 + 4*$CellContext`stigma)*(-3 + $CellContext`stigma + \
+8*$CellContext`stigma^2)*n\[CurlyPi][2])/$CellContext`stigma)/
+    (96*(-1 + 4*$CellContext`stigma^2)) == 0, n\[CurlyPi][2]]]
+(* ===== IN[148] bc=23216 ===== *)
+HoldForm[FullSimplify[
+  \[CurlyPi]list[[4]] /. {n\[CurlyPi][2] -> \
+-(($CellContext`H0^2*$CellContext`OmegaM0^2*(-1 + \
+$CellContext`stigma)*$CellContext`stigma*
+         (-1 + 4*$CellContext`stigma)*(21 + $CellContext`stigma*(-14 + \
+$CellContext`stigma*
+             (-191 + 4*$CellContext`stigma*(-41 + 48*$CellContext`stigma*(1 \
++ 4*$CellContext`stigma))))))/
+        (12*mups2*$CellContext`OmegaR0*(1 + 4*$CellContext`stigma)*(-3 + \
+$CellContext`stigma + 8*$CellContext`stigma^2)*
+         (3 + $CellContext`stigma*(1 + 4*$CellContext`stigma)*(-5 + \
+8*$CellContext`stigma))^2))} /. 
+   {n\[CurlyPi][1] -> ($CellContext`H0*$CellContext`OmegaM0*(-1 + \
+$CellContext`stigma)*Sqrt[$CellContext`stigma]*
+       Sqrt[-1 + \
+4*$CellContext`stigma])/(Sqrt[mups2]*Sqrt[$CellContext`OmegaR0]*(3 - \
+5*$CellContext`stigma - 
+        12*$CellContext`stigma^2 + 32*$CellContext`stigma^3))}]]
+(* ===== IN[149] bc=27672 ===== *)
+HoldForm[
+ Solve[($CellContext`Tau*(-(($CellContext`H0^3*$CellContext`OmegaM0^3*(-1 + \
+$CellContext`stigma)*$CellContext`stigma^(3/2)*
+         Sqrt[-1 + 4*$CellContext`stigma]*(-309 + $CellContext`stigma*(-1438 \
++ $CellContext`stigma*
+             (9900 + $CellContext`stigma*(13670 + \
+$CellContext`stigma*(-81863 + 8*$CellContext`stigma*(-12897 + 
+                    2*$CellContext`stigma*(15993 + \
+32*$CellContext`stigma*(1443 + 32*$CellContext`stigma*(-15 + 
+                          $CellContext`stigma*(-155 + \
+12*$CellContext`stigma*(-1 + 16*$CellContext`stigma))))))))))))/
+        (mups2^(3/2)*$CellContext`OmegaR0^(3/2)*(1 + \
+4*$CellContext`stigma)*(-3 + $CellContext`stigma + 8*$CellContext`stigma^2)*
+         (3 + $CellContext`stigma*(1 + 4*$CellContext`stigma)*(-5 + \
+8*$CellContext`stigma))^3)) + 
+      24*(-3 + $CellContext`stigma*(-43 + 4*$CellContext`stigma*(3 + \
+40*$CellContext`stigma)))*n\[CurlyPi][3]))/
+    (192*$CellContext`stigma*(-1 + 4*$CellContext`stigma^2)) == 0, \
+n\[CurlyPi][3]]]

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stigma Q-torsion vs DESI DR2 — Pipeline Report</title>
+  <style>
+    :root {
+      --bg:      #0f1117;
+      --surface: #1a1d27;
+      --border:  #2c2f3e;
+      --accent:  #7c6ee6;
+      --accent2: #4fa3d1;
+      --green:   #4caf88;
+      --yellow:  #e0b84f;
+      --red:     #e06060;
+      --text:    #d8dae8;
+      --muted:   #888baa;
+      --code-bg: #151720;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* ── Header ── */
+    header { margin-bottom: 2.5rem; }
+    header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.3rem;
+    }
+    header .subtitle { color: var(--muted); font-size: 0.95rem; }
+    header .meta { color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem; }
+
+    /* ── Sections ── */
+    section { margin-bottom: 2.5rem; }
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent2);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 1rem 0 0.4rem;
+    }
+    p { margin-bottom: 0.7rem; }
+
+    /* ── File cards ── */
+    .file-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .file-card .filename {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.9rem;
+      color: var(--accent2);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── Parameter table ── */
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.9rem; }
+    thead { background: var(--surface); }
+    th {
+      text-align: left;
+      padding: 0.5rem 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.45rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(124,110,230,0.06); }
+    .mono { font-family: monospace; font-size: 0.88rem; color: var(--accent2); }
+
+    /* ── Code blocks ── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.9rem 1.1rem;
+      overflow-x: auto;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.83rem;
+      line-height: 1.55;
+      color: #c5c8d8;
+      margin-bottom: 0.8rem;
+    }
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.1em 0.4em;
+      font-family: monospace;
+      font-size: 0.87em;
+      color: var(--accent2);
+    }
+
+    /* ── Status badges ── */
+    .badge {
+      display: inline-block;
+      border-radius: 3px;
+      padding: 0.1rem 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-done   { background: rgba(76,175,136,0.2); color: var(--green); border: 1px solid var(--green); }
+    .badge-running{ background: rgba(224,184,79,0.2);  color: var(--yellow); border: 1px solid var(--yellow);}
+    .badge-pending{ background: rgba(136,139,170,0.15); color: var(--muted); border: 1px solid var(--border); }
+
+    /* ── Benchmark grid ── */
+    .bench-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+    .bench-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      text-align: center;
+    }
+    .bench-card .label { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.3rem; }
+    .bench-card .value { font-size: 1.4rem; font-weight: 700; color: var(--accent2); }
+    .bench-card .unit  { font-size: 0.8rem; color: var(--muted); }
+    .bench-card.highlight .value { color: var(--green); }
+
+    /* ── Stage diagram ── */
+    .stage-list { list-style: none; }
+    .stage-list li {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+      align-items: flex-start;
+    }
+    .stage-num {
+      min-width: 2rem;
+      height: 2rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* ── Pending list ── */
+    .pending-list { list-style: none; }
+    .pending-list li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.8rem;
+      align-items: flex-start;
+    }
+    .pending-list li:last-child { border-bottom: none; }
+    .pending-icon { font-size: 1rem; margin-top: 0.1rem; }
+
+    /* ── Formula ── */
+    .formula {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.7rem 1.2rem;
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      color: var(--text);
+      margin: 0.5rem 0 0.8rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── HEADER ──────────────────────────────────────────────────── -->
+  <header>
+    <h1>Stigma Q-torsion vs DESI DR2</h1>
+    <div class="subtitle">JAX/diffrax pipeline + BlackJAX Nested Slice Sampling — progress report</div>
+    <div class="meta">PhD research · University of Cambridge · May 2025</div>
+  </header>
+
+  <!-- ── OVERVIEW ─────────────────────────────────────────────────── -->
+  <section>
+    <h2>Overview</h2>
+    <p>
+      The Stigma Q-torsion theory is a modified gravity model in which a scalar field
+      <em>ϖ</em> (varpi) couples non-minimally to geometry. The goal of this pipeline is to
+      confront the theory against the <strong>DESI DR2 BAO</strong> dataset (13 distance
+      measurements) using <strong>Bayesian nested sampling</strong>, producing posteriors on
+      the Stigma parameters <em>ς</em>, <em>−υ₂</em>, <em>ϖ₀</em> as well as the standard
+      cosmological parameters Ω<sub>m</sub>, Ω<sub>Λ</sub>, H₀r<sub>d</sub>.
+    </p>
+    <p>
+      The original numerical solver (<code>equations_double.py</code>, scipy + numpy) has been
+      fully converted to <strong>JAX + diffrax</strong>, and the DESI likelihood wrapped for use
+      with <strong>BlackJAX Nested Slice Sampling (NSS)</strong>. The pipeline is JIT-compiled
+      and runs at <strong>4.8 ms per likelihood evaluation</strong> (cached), enabling practical
+      nested sampling on a laptop CPU.
+    </p>
+  </section>
+
+  <!-- ── FILES CREATED ────────────────────────────────────────────── -->
+  <section>
+    <h2>Files Created</h2>
+
+    <div class="file-card">
+      <div class="filename">python/equations_jax.py</div>
+      <p>
+        JAX/diffrax version of the Stigma Q-torsion ODE solver.
+        Replaces all scipy calls; fully JIT-compilable via <code>jax.jit</code>.
+      </p>
+      <h3>Key exports</h3>
+      <pre>solve_stigma_jax(cpr, omega_m, stigma, mups2, OmL, ...)   → asol, hsol, a0, H0_actual
+compute_desi_distances(asol, hsol, a0, H0_actual, rd)      → 13-element array
+get_Ez_at_z(asol, hsol, H0, z_arr)                        → E(z) = H(z)/H0
+constraints_satisfied(stigma, cpr)                         → (c1, c2) viability checks</pre>
+      <h3>Three-stage ODE solve</h3>
+      <ul class="stage-list">
+        <li>
+          <div class="stage-num">1</div>
+          <div>Integrate from <em>τ<sub>ini</sub></em> with placeholder <em>a₀=1</em> until
+            <em>da/dτ = H₀<sub>norm</sub></em>. The scale factor at that event gives the
+            normalisation constant <em>a₀</em>.</div>
+        </li>
+        <li>
+          <div class="stage-num">2a</div>
+          <div>Re-integrate with correct <em>a₀</em> until <em>a = 1</em>.
+            Reads <em>τ<sub>today</sub></em> and <em>H₀<sub>actual</sub> = da/dτ|<sub>a=1</sub></em>
+            directly from the ODE, guaranteeing <em>E(z=0) = 1</em> exactly.</div>
+        </li>
+        <li>
+          <div class="stage-num">2b</div>
+          <div>Solve again from <em>τ<sub>ini</sub></em> to <em>τ<sub>today</sub></em> on a
+            log-spaced grid of 500 points (for NSS) / 2000 points (for validation).
+            Returns the <em>a(τ)</em> and <em>aH(τ)</em> arrays used to compute distances.</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">python/stigma_nss.py</div>
+      <p>
+        DESI DR2 BAO likelihood (JAX) + BlackJAX NSS setup.
+        Hardcodes the 13-measurement data vector and 13×13 covariance matrix;
+        pre-computes the precision matrix once at import time.
+      </p>
+      <h3>Sampled parameters (6 total)</h3>
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Symbol</th><th>Prior</th><th>Physical meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">h0rd</td>
+            <td>H₀ r<sub>d</sub> [km/s]</td>
+            <td>U[3 000, 20 000]</td>
+            <td>BAO scale — marginalises H₀ / r<sub>d</sub> degeneracy</td>
+          </tr>
+          <tr>
+            <td class="mono">omega_m</td>
+            <td>Ω<sub>m</sub></td>
+            <td>U[0.1, 0.6]</td>
+            <td>Matter density today</td>
+          </tr>
+          <tr>
+            <td class="mono">OmL</td>
+            <td>Ω<sub>Λ</sub></td>
+            <td>U[0, 1]</td>
+            <td>Cosmological constant (posterior reveals whether Λ is needed)</td>
+          </tr>
+          <tr>
+            <td class="mono">stigma</td>
+            <td><em>ς</em></td>
+            <td>U[1.001, 2]</td>
+            <td>Stigma theory non-minimal coupling</td>
+          </tr>
+          <tr>
+            <td class="mono">mups2</td>
+            <td>−υ₂ &gt; 0</td>
+            <td>U[0.5, 2.5]</td>
+            <td>Stigma kinetic parameter</td>
+          </tr>
+          <tr>
+            <td class="mono">cpr</td>
+            <td><em>ϖ</em>₀</td>
+            <td>U[0.6, 0.999]</td>
+            <td>Stigma field initial condition</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Hard constraints (in logprior_fn)</h3>
+      <div class="formula">Ω<sub>m</sub> + Ω<sub>Λ</sub> + ω<sub>r</sub> &lt; 1 &nbsp;·&nbsp; c₁ &gt; 0 &nbsp;·&nbsp; c₂ &gt; 0</div>
+      <p>Flatness is enforced; Stigma provides the dark-energy–like component.</p>
+      <h3>Derived quantity</h3>
+      <div class="formula">r<sub>d</sub> = (H₀ r<sub>d</sub>) / H₀<sub>actual</sub></div>
+      <p>
+        The sound horizon is derived internally from the sampled <em>H₀ r<sub>d</sub></em>
+        and the H₀<sub>actual</sub> read from the ODE. This keeps the distance computation
+        self-consistent without fixing r<sub>d</sub> to a Planck value.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── DESI DISTANCES ───────────────────────────────────────────── -->
+  <section>
+    <h2>DESI DR2 BAO Distances</h2>
+    <p>
+      Distances are computed by integrating the ODE solution, matching the conventions
+      of the original <code>distances/desidr2.py</code> polychord setup:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Observable</th><th>Formula</th><th>Redshifts</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>D<sub>H</sub>/r<sub>d</sub></td>
+          <td>c / (H(z) · r<sub>d</sub>) = c / (H₀ E(z) · r<sub>d</sub>)</td>
+          <td>0.510, 0.706, 0.934, 1.321, 1.484, 2.330</td>
+        </tr>
+        <tr>
+          <td>D<sub>M</sub>/r<sub>d</sub></td>
+          <td>(c/r<sub>d</sub>) ∫ da / (a² H(a))</td>
+          <td>0.510, 0.706, 0.934, 1.321, 1.484, 2.330</td>
+        </tr>
+        <tr>
+          <td>D<sub>V</sub>/r<sub>d</sub></td>
+          <td>(z · D<sub>M</sub>² · D<sub>H</sub>)<sup>1/3</sup></td>
+          <td>0.295</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>13 measurements total, with a block-diagonal covariance matrix (uncorrelated across redshift bins).</p>
+  </section>
+
+  <!-- ── PERFORMANCE ──────────────────────────────────────────────── -->
+  <section>
+    <h2>Performance</h2>
+    <div class="bench-grid">
+      <div class="bench-card">
+        <div class="label">JIT compile time</div>
+        <div class="value">5.8</div>
+        <div class="unit">seconds (once per session)</div>
+      </div>
+      <div class="bench-card highlight">
+        <div class="label">Cached likelihood call</div>
+        <div class="value">4.8</div>
+        <div class="unit">ms per evaluation</div>
+      </div>
+      <div class="bench-card highlight">
+        <div class="label">NSS step (exploration)</div>
+        <div class="value">4–10</div>
+        <div class="unit">s per step (steps 2–5)</div>
+      </div>
+      <div class="bench-card">
+        <div class="label">Speedup vs original</div>
+        <div class="value">~20×</div>
+        <div class="unit">vs 150s/step baseline</div>
+      </div>
+    </div>
+
+    <h3>Timing results (benchmark run: num_live=50, num_delete=5)</h3>
+    <table>
+      <thead>
+        <tr><th>Step</th><th>Time (s)</th><th>logZ</th><th>logZ_live</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>init</td><td>8.4</td><td>−∞</td><td>−1605</td><td>JIT compile of algo.init</td></tr>
+        <tr><td>1</td><td>43.7</td><td>−513 359</td><td>−1605</td><td>JIT compile of algo.step</td></tr>
+        <tr><td>2</td><td>3.5</td><td>−420 928</td><td>−1605</td><td>Cached ✓</td></tr>
+        <tr><td>3</td><td>4.0</td><td>−186 119</td><td>−1605</td><td>Cached ✓</td></tr>
+        <tr><td>4</td><td>5.1</td><td>−118 849</td><td>−1605</td><td>Cached ✓</td></tr>
+        <tr><td>5</td><td>10.3</td><td>−86 294</td><td>−1606</td><td>More contractions near peak</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The first step includes JIT compilation of <code>algo.step</code>.
+      Subsequent steps run in 3.5–10 s. The occasional slower step (step 5) reflects
+      the slice sampler needing more bracket contractions as the live points
+      narrow toward the posterior peak — expected and correct behaviour.
+    </p>
+
+    <h3>NSS parameter choices</h3>
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>Exploration</th><th>Production</th><th>Effect</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>num_live</code></td>
+          <td>200</td>
+          <td>500+</td>
+          <td>More live points → better evidence estimate, more steps</td>
+        </tr>
+        <tr>
+          <td><code>num_inner_steps</code></td>
+          <td>18 (3×ndim)</td>
+          <td>30 (5×ndim)</td>
+          <td>More moves per replacement → less correlated samples</td>
+        </tr>
+        <tr>
+          <td><code>max_slice_steps</code></td>
+          <td>5</td>
+          <td>10</td>
+          <td>Max bracket expansions per slice move</td>
+        </tr>
+        <tr>
+          <td><code>max_shrinkage</code></td>
+          <td>20</td>
+          <td>100</td>
+          <td>Max bracket contractions per slice move</td>
+        </tr>
+        <tr>
+          <td>ODE rtol/atol</td>
+          <td>1×10⁻⁶</td>
+          <td>1×10⁻⁷</td>
+          <td>Looser tolerance → ~2× faster ODE for NSS</td>
+        </tr>
+        <tr>
+          <td><code>n_save</code></td>
+          <td>500</td>
+          <td>2000</td>
+          <td>Grid points for distance integration</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── USAGE ─────────────────────────────────────────────────────── -->
+  <section>
+    <h2>How to Run</h2>
+    <pre>source /Users/starfish/Desktop/PhD2025-26/env_camb_new/bin/activate
+cd /Users/starfish/Desktop/PhD2025-26/Stigma/python
+
+# Quick likelihood test (one ODE solve + DESI chi²):
+python stigma_nss.py --test
+
+# Exploration run (~30–60 min on CPU):
+python stigma_nss.py --live 200 --output output
+
+# Production run (slower, better evidence):
+python stigma_nss.py --live 500 --inner 30 --max-shrink 100 --output output_prod
+
+# Load results for analysis:
+python -c "
+from stigma_nss import load_as_nested_samples
+ns = load_as_nested_samples('output')
+print('logZ =', ns.logZ())
+ns.plot_2d(['omega_m','OmL','stigma','cpr']).savefig('corner.pdf')
+"</pre>
+    <p>Output: <code>output/stigma_desi_dead.pkl</code> and <code>output/stigma_desi_live.pkl</code>,
+    loadable as an <strong>anesthetic</strong> <code>NestedSamples</code> object for corner plots
+    and Bayesian evidence calculation.</p>
+  </section>
+
+  <!-- ── STATUS ────────────────────────────────────────────────────── -->
+  <section>
+    <h2>Status</h2>
+    <ul class="pending-list">
+      <li>
+        <span class="pending-icon">✅</span>
+        <div>
+          <strong><span class="badge badge-done">Done</span>&nbsp; JAX ODE solver</strong><br/>
+          <code>equations_jax.py</code> — three-stage solve, event detection,
+          graceful failure guards, validated against scipy to 4 d.p.
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">✅</span>
+        <div>
+          <strong><span class="badge badge-done">Done</span>&nbsp; DESI DR2 JAX likelihood</strong><br/>
+          13 BAO measurements, block-diagonal covariance, precision matrix pre-computed.
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">✅</span>
+        <div>
+          <strong><span class="badge badge-done">Done</span>&nbsp; BlackJAX NSS setup</strong><br/>
+          6 parameters sampled, <code>run_nss()</code> with configurable slice parameters,
+          output saved as pickle for anesthetic.
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">✅</span>
+        <div>
+          <strong><span class="badge badge-done">Done</span>&nbsp; Performance tuning</strong><br/>
+          Reduced <code>max_steps</code> from 2M → 50K; added slice-step limits;
+          20× speedup to 4–10 s/step confirmed in benchmark.
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">🔲</span>
+        <div>
+          <strong><span class="badge badge-pending">Pending</span>&nbsp; Full exploration run</strong><br/>
+          Run <code>python stigma_nss.py --live 200</code> to convergence (~30–90 min).
+          The NSS will map the posterior over all 6 parameters.
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">🔲</span>
+        <div>
+          <strong><span class="badge badge-pending">Pending</span>&nbsp; Posterior visualisation</strong><br/>
+          Corner plots of (ς, −υ₂, ϖ₀, Ω<sub>m</sub>, Ω<sub>Λ</sub>) and 1D marginals
+          via <strong>anesthetic</strong> <code>NestedSamples.plot_2d()</code>.
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">🔲</span>
+        <div>
+          <strong><span class="badge badge-pending">Pending</span>&nbsp; Bayes factor</strong><br/>
+          Compute log Z and compare Stigma vs ΛCDM to quantify whether the data
+          prefer pure modified gravity (Ω<sub>Λ</sub>→0) or require a cosmological constant.
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">🔲</span>
+        <div>
+          <strong><span class="badge badge-pending">Pending</span>&nbsp; Physical sanity check</strong><br/>
+          Verify derived H₀ and r<sub>d</sub> from posterior are physical
+          (H₀ ≈ 67–73 km/s/Mpc, r<sub>d</sub> ≈ 140–155 Mpc).
+        </div>
+      </li>
+      <li>
+        <span class="pending-icon">🔲</span>
+        <div>
+          <strong><span class="badge badge-pending">Pending</span>&nbsp; Production run &amp; paper</strong><br/>
+          Increase to <code>num_live=500</code>, tighter slice parameters for publication-quality evidence.
+          Write up Bayesian comparison in the LaTeX paper.
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ── KEY PHYSICS ───────────────────────────────────────────────── -->
+  <section>
+    <h2>Key Physics Notes</h2>
+    <h3>Why OmL is sampled</h3>
+    <p>
+      Stigma is a <em>modification of gravity</em>, not simply dark energy added to ΛCDM.
+      The Stigma field can provide an accelerated expansion without a cosmological constant.
+      However, a mixed model (Stigma + Λ) is also physically valid. By sampling Ω<sub>Λ</sub>
+      as a free parameter, the posterior will naturally reveal whether the DESI data prefer
+      pure Stigma (Ω<sub>Λ</sub>→0), ΛCDM-like (Ω<sub>Λ</sub>∼0.7), or something in between.
+    </p>
+    <h3>Why h0rd is sampled instead of H0 and rd separately</h3>
+    <p>
+      DESI measures distance ratios D/r<sub>d</sub>. The sound horizon r<sub>d</sub>
+      depends on pre-recombination physics (primarily ω<sub>b</sub> and N<sub>eff</sub>),
+      which are not part of the Stigma ODE. Sampling the product
+      H₀ r<sub>d</sub> marginalises over this degeneracy, and the sound horizon is
+      derived as r<sub>d</sub> = (H₀ r<sub>d</sub>) / H₀<sub>actual</sub> using the H₀
+      read from the ODE at a=1.
+    </p>
+    <h3>Stigma viability constraints</h3>
+    <p>
+      The theory requires two conditions to be well-posed (no ghost, no gradient instability):
+    </p>
+    <div class="formula">c₁ = ς − ϖ₀² &gt; 0 &nbsp;&nbsp; and &nbsp;&nbsp; c₂ = ϖ₀² − ς(5 + 4ς(−2 + ϖ₀²)) &gt; 0</div>
+    <p>These are enforced as hard priors in <code>logprior_fn</code>.</p>
+  </section>
+
+  <footer style="margin-top:3rem; padding-top:1rem; border-top:1px solid var(--border); color:var(--muted); font-size:0.82rem;">
+    Generated by Claude Code (claude-sonnet-4-6) · May 2025
+  </footer>
+
+</div>
+</body>
+</html>

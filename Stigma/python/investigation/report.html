@@ -1,0 +1,611 @@
+<title>The ς=1 Sign Cancellation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --bg:#F6F6FA; --surface:#FFFFFF; --surface-2:#EDEDF4; --surface-3:#E4E4EE;
+  --ink:#1A1A24; --ink-2:#4C4C5E; --ink-3:#7C7C90;
+  --rule:#DBDBE6; --rule-strong:#C3C3D2;
+  --accent:#4338A8; --accent-soft:#EAE7F8; --accent-line:#B9B1E8;
+  --good:#0E6B5F; --good-soft:#DFF0EC; --good-line:#8FCCC2;
+  --bad:#A32E4A; --bad-soft:#F9E3E8; --bad-line:#E2A6B5;
+  --shadow:0 1px 2px rgba(26,26,36,.05), 0 8px 24px -12px rgba(26,26,36,.16);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131319; --surface:#1B1B24; --surface-2:#22222D; --surface-3:#2B2B38;
+    --ink:#ECECF3; --ink-2:#A6A6BA; --ink-3:#79798E;
+    --rule:#32323F; --rule-strong:#42424F;
+    --accent:#9E93F2; --accent-soft:#241E45; --accent-line:#4B3F8C;
+    --good:#4FCCB5; --good-soft:#0F312C; --good-line:#2A6B60;
+    --bad:#F08AA1; --bad-soft:#3A1A23; --bad-line:#7A3346;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131319; --surface:#1B1B24; --surface-2:#22222D; --surface-3:#2B2B38;
+  --ink:#ECECF3; --ink-2:#A6A6BA; --ink-3:#79798E;
+  --rule:#32323F; --rule-strong:#42424F;
+  --accent:#9E93F2; --accent-soft:#241E45; --accent-line:#4B3F8C;
+  --good:#4FCCB5; --good-soft:#0F312C; --good-line:#2A6B60;
+  --bad:#F08AA1; --bad-soft:#3A1A23; --bad-line:#7A3346;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:16.5px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:960px; margin:0 auto; padding:0 28px 96px;}
+.col{max-width:660px;}
+
+/* ---- masthead ---- */
+.mast{padding:64px 0 0; border-bottom:1px solid var(--rule); margin-bottom:48px;}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 20px;
+}
+h1{
+  font-family:Spectral,Georgia,serif; font-weight:700; font-size:clamp(38px,6vw,58px);
+  line-height:1.06; letter-spacing:-.02em; margin:0 0 20px; text-wrap:balance;
+}
+.standfirst{
+  font-family:Spectral,Georgia,serif; font-size:20px; line-height:1.5;
+  color:var(--ink-2); margin:0 0 30px; max-width:640px; text-wrap:balance;
+}
+.meta{
+  display:flex; flex-wrap:wrap; gap:8px 26px; padding:0 0 28px;
+  font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-3);
+}
+.meta b{color:var(--ink-2); font-weight:500;}
+
+/* ---- verdict ---- */
+.verdict{
+  background:var(--surface); border:1px solid var(--rule);
+  border-left:3px solid var(--accent); border-radius:3px;
+  padding:26px 30px; margin:0 0 52px; box-shadow:var(--shadow);
+}
+.verdict h2{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent);
+  margin:0 0 14px;
+}
+.verdict p{margin:0 0 12px; font-size:17px;}
+.verdict p:last-child{margin-bottom:0;}
+
+/* ---- sections ---- */
+section{margin:0 0 60px; scroll-margin-top:24px;}
+h2.sec{
+  font-family:Spectral,Georgia,serif; font-weight:600; font-size:29px;
+  letter-spacing:-.015em; line-height:1.2; margin:0 0 8px; text-wrap:balance;
+  display:flex; align-items:baseline; gap:14px;
+}
+h2.sec .num{
+  font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:500;
+  color:var(--accent); letter-spacing:0; flex:none; padding-top:2px;
+}
+.dek{color:var(--ink-3); font-size:15px; margin:0 0 26px; padding-left:37px;}
+h3{
+  font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:16px;
+  letter-spacing:.005em; margin:34px 0 10px; color:var(--ink);
+}
+p{margin:0 0 15px;}
+.col p, .col ul, .col ol{max-width:660px;}
+ul,ol{margin:0 0 15px; padding-left:22px;}
+li{margin:0 0 7px;}
+strong{font-weight:600;}
+em{font-style:italic;}
+code, .m{
+  font-family:"IBM Plex Mono",monospace; font-size:.88em;
+  background:var(--surface-2); padding:.1em .34em; border-radius:2px;
+  border:1px solid var(--rule);
+}
+.m{background:none; border:none; padding:0; font-size:.94em; color:var(--ink);}
+
+/* ---- display equation ---- */
+.eq{
+  background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:18px 22px; margin:22px 0; overflow-x:auto;
+  font-family:"IBM Plex Mono",monospace; font-size:14px; line-height:1.75;
+  color:var(--ink); white-space:pre;
+}
+.eq .lbl{
+  display:block; font-family:"IBM Plex Sans",sans-serif; font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+  margin-bottom:10px; white-space:normal;
+}
+
+/* ---- tables ---- */
+.tw{overflow-x:auto; margin:22px 0; border:1px solid var(--rule); border-radius:3px; background:var(--surface);}
+table{border-collapse:collapse; width:100%; font-size:14.5px;}
+caption{
+  caption-side:top; text-align:left; padding:14px 18px 12px;
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); border-bottom:1px solid var(--rule);
+}
+th{
+  text-align:left; font-weight:500; font-size:12.5px; letter-spacing:.04em;
+  color:var(--ink-2); padding:11px 18px; border-bottom:1px solid var(--rule-strong);
+  background:var(--surface-2); white-space:nowrap;
+}
+td{padding:11px 18px; border-bottom:1px solid var(--rule); vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+td.n, th.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; white-space:nowrap;}
+.ok{color:var(--good); font-weight:600;}
+.no{color:var(--bad); font-weight:600;}
+tr.ghost td{background:var(--bad-soft);}
+tr.fine td{background:var(--good-soft);}
+
+.pill{
+  display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  font-weight:500; letter-spacing:.06em; text-transform:uppercase;
+  padding:2.5px 8px; border-radius:2px; white-space:nowrap;
+}
+.pill.out{background:var(--surface-3); color:var(--ink-2); border:1px solid var(--rule-strong);}
+.pill.hit{background:var(--bad-soft); color:var(--bad); border:1px solid var(--bad-line);}
+
+/* ---- figure ---- */
+figure{margin:30px 0; padding:0;}
+.fig-box{
+  background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:14px 10px 6px; overflow-x:auto;
+}
+figcaption{
+  font-size:13.5px; color:var(--ink-3); margin-top:12px; line-height:1.55;
+  max-width:660px;
+}
+svg{display:block; width:100%; height:auto; min-width:600px;}
+
+/* ---- callout ---- */
+.note{
+  border-left:2px solid var(--rule-strong); padding:2px 0 2px 18px;
+  margin:22px 0; color:var(--ink-2); font-size:15.5px;
+}
+.note b{color:var(--ink);}
+
+.clarif{
+  background:var(--surface-2); border:1px solid var(--rule); border-radius:3px;
+  padding:16px 20px; margin:22px 0; font-size:15px; color:var(--ink-2);
+}
+.clarif strong{color:var(--ink);}
+
+/* ---- ledger ---- */
+.led{list-style:none; padding:0; margin:22px 0 0;}
+.led li{
+  display:grid; grid-template-columns:34px 1fr auto; gap:4px 16px;
+  align-items:baseline; padding:14px 0; border-top:1px solid var(--rule); margin:0;
+}
+.led li:last-child{border-bottom:1px solid var(--rule);}
+.led .h{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent); font-weight:500;}
+.led .why{grid-column:2/4; font-size:14px; color:var(--ink-3); margin-top:3px;}
+
+footer{
+  border-top:1px solid var(--rule); padding-top:24px; margin-top:70px;
+  font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-3);
+}
+footer p{margin:0 0 7px; max-width:none;}
+a{color:var(--accent);}
+a:focus-visible, [tabindex]:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+@media (max-width:620px){
+  .wrap{padding:0 18px 64px;}
+  h2.sec{flex-direction:column; gap:2px;}
+  .dek{padding-left:0;}
+}
+</style>
+
+<div class="wrap">
+
+
+<header class="mast">
+  <p class="eyebrow">Stigma Q-torsion · derivation forensics</p>
+  <h1>The ς=1 Sign Cancellation</h1>
+  <p class="standfirst">Two factors in the modified Friedmann constraint change sign together at ς=1. They divide out, so the radiation coefficients stay real and positive on both sides — and nothing in the algebra records which side it came from.</p>
+  <div class="meta">
+    <span><b>Question</b> why ς&lt;1 reproduces ς&gt;1-type evolution</span>
+    <span><b>Method</b> full re-derivation from the Lagrangian</span>
+    <span><b>Revised</b> 25 Aug 2026 · adds §6–§7</span>
+  </div>
+</header>
+
+<div class="verdict">
+  <h2>Verdict</h2>
+  <p>No algebra is wrong. The Lagrangian, the Φ elimination, the constraint and the early-time series were rebuilt from scratch and agree with the notebook exactly.</p>
+  <p>At the radiation fixed point ϖ₀=±1 the two sign-sensitive factors in the constraint are <span class="m">ς−ϖ₀² = ς−1</span> and <span class="m">(4ς²−1)ϖ₀²+ς(5−8ς) = −(4ς−1)(ς−1)</span>. For every ς&gt;¼ these have <em>opposite</em> signs, so their ratio — which is what sets <span class="m">a₁²</span> — is positive on both sides of ς=1 and carries no record of the flip.</p>
+  <p>Since <span class="m">v₁&lt;0</span> always, the analytic branch drifts down from 1 in both regimes. For ς&gt;1 that moves it away from <span class="m">ϖ=√ς</span>; for ς&lt;1 it moves straight into it, and that surface is exactly where the Φ elimination divides by zero.</p>
+  <p>There <em>is</em> a second, upward branch for ς&lt;1 — but it does not rescue the model. The two singular surfaces <span class="m">ϖ=√ς</span> and <span class="m">ϖ=2√ς</span> cross the line ϖ=1 at ς=1 and ς=¼, so for <strong>¼ &lt; ς &lt; 1 the starting point sits strictly between them</strong>. Both exits are closed. For ς&gt;1 it lies below the corridor entirely.</p>
+</div>
+
+<section class="col">
+  <h2 class="sec"><span class="num">§1</span> The symptom</h2>
+  <p class="dek">Where the integration stops, and how precisely.</p>
+  <div class="tw">
+    <table>
+      <caption>Integration of the exact system, from independently derived equations</caption>
+      <thead><tr><th>ς</th><th class="n">ends at τ</th><th class="n">ϖ² at end</th><th class="n">ς</th><th class="n">a at end</th><th>outcome</th></tr></thead>
+      <tbody>
+        <tr class="ghost"><td class="n">0.6</td><td class="n">0.01119</td><td class="n">0.60115</td><td class="n">0.6</td><td class="n">9.2×10⁻⁵</td><td><span class="pill hit">halts at ϖ²=ς</span></td></tr>
+        <tr class="ghost"><td class="n">0.9</td><td class="n">0.00505</td><td class="n">0.90017</td><td class="n">0.9</td><td class="n">4.2×10⁻⁵</td><td><span class="pill hit">halts at ϖ²=ς</span></td></tr>
+        <tr class="fine"><td class="n">1.5</td><td class="n">3.45</td><td class="n">0.885</td><td class="n">1.5</td><td class="n">1.1×10¹⁵</td><td><span class="pill out">survives</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Taking <span class="m">mυ₂=4/3, Ω_r0=9×10⁻⁵, Ω_m0=0.31, Ω_L0=0.69</span>. Equality sits at <span class="m">a_eq = Ω_r0/Ω_m0 = 2.9×10⁻⁴</span>, so both ς&lt;1 runs fail <em>before</em> equality — deep in radiation domination, where ϖ should still be pinned at 1.</p>
+  <div class="note"><b>ς&gt;1 is not healthy either; it fails in a safe direction.</b> In the ς=1.5 run ϖ² falls from 1 to 0.45 by τ=0.155. The drift is just as violent — the singular surface simply lies above the starting point instead of below it.</div>
+</section>
+
+<section>
+  <div class="col">
+    <h2 class="sec"><span class="num">§2</span> From the action to the pole</h2>
+    <p class="dek">Where every factor in the reduced equations comes from.</p>
+    <p>The starting point, on FLRW with <span class="m">ds² = N²dt² − a²dx²</span> and <span class="m">X_ψ = ψ′²/2N²</span>:</p>
+  </div>
+
+  <div class="eq col"><span class="lbl">1 · The action</span>L = √−g [ (½Mp²υ₂ − ½σ₂ψ²)R − 6σ₂X_ψ + √(J_a J^a)
+          + ¾Mp²(υ₂Φ² + 4υ₁ψ²) − 3σ₂Φ²ψ² ]
+
+with   J^a = 4σ₁ψ³ ∇^a(Φ/ψ) − Mp²υ₂ ∇^aΦ</div>
+
+  <div class="col"><p>On this background the current contracts to a perfect square, so the square root is an absolute value:</p></div>
+
+  <div class="eq col"><span class="lbl">2 · The square root</span>J_a J^a = K²/N² ,   K = (Mp²υ₂ − 4σ₁ψ²)Φ′ + 4σ₁Φψψ′
+
+so   √(J_a J^a) = |K|/N  ≡  sgn·K/N</div>
+
+  <div class="col"><p>Two substitutions define the theory of interest and the field redefinition ψ→ϖ:</p></div>
+
+  <div class="eq col"><span class="lbl">3 · Substitutions</span>υ₁ = 0 ,   σ₁ = σ₂ ς ,   ψ = Mp√υ₂ ϖ / √(4σ₂ς)</div>
+
+  <div class="col"><p>These are what generate every special surface in the problem. Term by term:</p></div>
+
+  <div class="eq col"><span class="lbl">4 · What the substitutions produce</span>Mp²υ₂ − 4σ₁ψ²   =  Mp²υ₂ (1 − ϖ²)
+4σ₁Φψψ′         =  Mp²υ₂ Φ ϖ ϖ′
+   ⇒  K = Mp²υ₂ [ (1 − ϖ²)Φ′ + Φ ϖ ϖ′ ]
+
+½Mp²υ₂ − ½σ₂ψ²  =  Mp²υ₂ (4ς − ϖ²) / 8ς       ← effective Planck mass
+¾Mp²υ₂Φ² − 3σ₂Φ²ψ²  =  ¾Mp²υ₂ Φ² (ς − ϖ²)/ς   ← Φ mass term</div>
+
+  <div class="col">
+    <p>So there are two distinct surfaces, from two distinct places. <span class="m">ϖ²=4ς</span> is where the effective Planck mass vanishes. <span class="m">ϖ²=ς</span> is where the Φ mass term vanishes — it arises from the competition between <span class="m">¾Mp²υ₂Φ²</span> and <span class="m">−3σ₂Φ²ψ²</span>, and it is the one that matters here.</p>
+    <p>Φ carries no kinetic term: the coefficient of Φ′ in its own Euler–Lagrange equation vanishes <em>identically</em>, not after simplification. So Φ is auxiliary and is eliminated algebraically:</p>
+  </div>
+
+  <div class="eq col"><span class="lbl">5 · Eliminating Φ — this is where the pole is created</span>Φ equation:   Φ (ς − ϖ²) a  =  −2 sgn ς [ (ϖ²−1)a′ + a ϖ ϖ′ ]
+
+    ⇒   Φ  =  − 2 sgn ς [ (ϖ²−1)a′ + a ϖ ϖ′ ]
+              ───────────────────────────────
+                       a (ς − ϖ²)</div>
+
+  <div class="col">
+    <p>The original action contains no <span class="m">(ς−ϖ²)⁻¹</span>. It appears only here. Back-substituting produces terms in <span class="m">[(ϖ²−1)a′+aϖϖ′]²/(ς−ϖ²)</span>, and varying those gives the <span class="m">(ς−ϖ²)⁻²</span> that sits in the denominators of the reduced accelerations.</p>
+    <p>This also disposes of the square-root sign, structurally rather than by inspection. Φ ∝ sgn, and the Lagrangian is quadratic in Φ plus sgn×(linear in Φ) — so eliminating Φ can only ever produce sgn². Carried symbolically to the end, all three final equations contain sgn only at exponent 2, and Eq(sgn=+1) − Eq(sgn=−1) = 0 exactly.</p>
+    <p>What remains is the modified Friedmann constraint. In conformal time, with <span class="m">ρ̃ = Ω_r0 + Ω_m0 a + Ω_L0 a⁴</span>:</p>
+  </div>
+
+  <div class="eq"><span class="lbl">6 · The constraint after eliminating Φ</span>4H₀² ς (ϖ² − ς) ρ̃  =  mυ₂ { ϖ²[ (4ς²−1)ϖ² + ς(5−8ς) ] a′²
+                            + 2aϖ[ (4ς²−1)ϖ² − ς(4ς−1) ] a′ϖ′
+                            + a²[ ς + (4ς²−1)ϖ² ] ϖ′² }</div>
+</section>
+
+<section>
+  <div class="col">
+    <h2 class="sec"><span class="num">§3</span> The cancellation</h2>
+    <p class="dek">Why a₁ comes out real and positive on both sides of ς=1.</p>
+    <p>Evaluate that constraint at the radiation fixed point, <span class="m">ϖ=1, ϖ′=0</span>. Only two structures survive, one on each side:</p>
+  </div>
+
+  <div class="eq col"><span class="lbl">7 · Both sides carry the same factor</span>left  :  (ϖ² − ς)|₍ϖ₌₁₎          =  1 − ς
+right :  [(4ς²−1)ϖ² + ς(5−8ς)]|₍ϖ₌₁₎ = −4ς² + 5ς − 1 = (4ς−1)(1 − ς)
+
+  ⇒   4H₀² ς (1−ς) ρ̃  =  mυ₂ (4ς−1)(1−ς) a′²</div>
+
+  <div class="col">
+    <p>The factor <span class="m">(1−ς)</span> divides out. What is left has no memory of it:</p>
+  </div>
+
+  <div class="eq col"><span class="lbl">8 · The result, with the sign information gone</span>a′²  =  4H₀² ς ρ̃ / [ mυ₂ (4ς−1) ]
+
+  ⇒  a₁  =  2H₀ √(ς Ω_r0) / √( mυ₂ (4ς−1) )     — positive for every ς &gt; ¼</div>
+
+  <div class="col">
+    <p>This is the whole mechanism. The two factors have opposite signs for all ς&gt;¼, so their ratio is positive regardless of which side of ς=1 you are on:</p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <caption>The two sign-sensitive factors at ϖ₀=1</caption>
+      <thead><tr><th>factor</th><th>value at ϖ₀=1</th><th class="n">ς &gt; 1</th><th class="n">ς &lt; 1</th></tr></thead>
+      <tbody>
+        <tr><td>ς − ϖ₀²</td><td class="n">ς − 1</td><td class="n"><span class="ok">+</span></td><td class="n"><span class="no">−</span></td></tr>
+        <tr><td>(4ς²−1)ϖ₀² + ς(5−8ς)</td><td class="n">−(4ς−1)(ς−1)</td><td class="n"><span class="no">−</span></td><td class="n"><span class="ok">+</span></td></tr>
+        <tr><td><strong>ratio → a₁²</strong></td><td class="n">4H₀²ςΩ_r0 / mυ₂(4ς−1)</td><td class="n"><span class="ok">+</span></td><td class="n"><span class="ok">+</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <p>Written with the square root left unsimplified, the same statement reads: for ς&lt;1 the numerator supplies the imaginary unit, for ς&gt;1 the denominator does, and in both cases <span class="m">a′</span> comes out real.</p>
+  </div>
+
+  <div class="eq col"><span class="lbl">9 · The same thing, before simplification</span>a′  =  ± 2i H₀ √Ω_r0 √ς · √(ς − ϖ₀²)
+       ─────────────────────────────────────────────
+       √( mυ₂ ϖ₀² [ 5ς − ϖ₀² + 4ς²(−2 + ϖ₀²) ] )</div>
+
+  <div class="col">
+    <div class="note">This is why checking that the simplified <b>a₁</b> is real gives no warning whatsoever. Reality is preserved <b>on both sides</b>, by a different pairing of imaginary factors each time. The simplified expression is a single analytic function of ς on ς&gt;¼; the information distinguishing the two sectors was cancelled, not carried.</div>
+    <p class="clarif"><strong>A precision about "continuation."</strong> What continues analytically across ς=1 is the algebraically simplified radiation solution, as a function of the parameter ς. That is a continuation in parameter space. It is <em>not</em> a trajectory crossing the surface <span class="m">ϖ²=ς</span> in phase space — no solution does that here. The two notions are distinct and only the first is happening at this stage.</p>
+  </div>
+</section>
+
+<section class="col">
+  <h2 class="sec"><span class="num">§4</span> ϖ₀ = ±1 is forced</h2>
+  <p class="dek">Not a normalisation — the unique regular radiation fixed point.</p>
+  <p>Impose pure radiation, constant ϖ, and the constraint, with a ∝ τ. The ϖ equation then factors completely:</p>
+  <div class="eq"><span class="lbl">10 · Pure-radiation ϖ equation with the constraint imposed</span>−48 H₀² Mp² Ω_r0 (ς−1) ς³ · (ϖ₀−1)(ϖ₀+1) · (ς−ϖ₀²)
+─────────────────────────────────────────────────────  =  0
+        ϖ₀ ( 5ς − 8ς² − ϖ₀² + 4ς²ϖ₀² )</div>
+  <p>The roots are <span class="m">ϖ₀ = ±1</span> and <span class="m">ϖ₀² = ς</span> — and the third <em>is</em> the singular surface, not an interior solution. Independently, the constant-ϖ correspondence polynomial evaluated at w=1/3 factors to <span class="m">8Mp²mυ₂(ς−1)ς²√x(√x−1)(√x+1)a³</span>, giving <span class="m">x=1</span> uniquely.</p>
+  <p>So ϖ₀ cannot be retuned to sit inside the region <span class="m">ϖ²&lt;ς</span> while remaining a radiation fixed point. This closes the last escape route: the ς&lt;1 behaviour cannot be repaired by choosing different initial data.</p>
+</section>
+
+<section class="col">
+  <h2 class="sec"><span class="num">§5</span> The early-time coefficients</h2>
+  <p class="dek">Unique, linear, and negative — with no ± branch anywhere.</p>
+  <p>Expand <span class="m">a = Σ aᵢτⁱ (i≥1)</span> and <span class="m">ϖ = 1 + Σ vᵢτⁱ</span>. The two leading orders read:</p>
+  <div class="eq"><span class="lbl">11 · Leading orders</span>constraint, τ⁰ :   (ς−1) · [ 4H₀²Ω_r0 ς + mυ₂ a₁²(1−4ς) ]  =  0
+ϖ equation, τ⁰ :   mυ₂ (ς−1)² · a₁ · ( a₂ + a₁v₁ )        =  0
+constraint, τ¹ :   mυ₂ [ a₁v₁ − (4ς−1)a₂ ]  =  −H₀² Ω_m0 ς</div>
+  <p>Both of the last two are <strong>linear</strong> in <span class="m">{a₂, v₁}</span>, so within this ansatz the solution is unique:</p>
+  <div class="eq"><span class="lbl">12 · The coefficients</span>a₁ =  2H₀ √(Ω_r0 ς) / √( mυ₂(4ς−1) )        (a₁&gt;0 = expanding)
+a₂ =  H₀² Ω_m0 / (4 mυ₂)
+v₁ = −H₀ Ω_m0 √(4ς−1) / ( 8 √(mυ₂ Ω_r0 ς) )   &lt; 0  for all ς &gt; ¼</div>
+  <div class="clarif"><strong>The scope of this uniqueness.</strong> It covers only solutions <em>analytic at τ=0</em>. The ansatz <span class="m">ϖ = 1 + Σvᵢτⁱ</span> excludes logarithmic terms by construction, and §7 shows the system has a second branch that is exactly of that excluded type. "v₁ is unique" is a statement about the Taylor class, not about the solution space.</div>
+  <p>Note the structure of the leading orders: the constraint's τ⁰ coefficient carries an overall <span class="m">(ς−1)</span>, and the ϖ equation's carries <span class="m">(ς−1)²</span>. Both degenerate entirely at ς=1, which is the source of the non-uniformity there and of the <span class="m">1/(ς−1)</span> growth in the higher coefficients.</p>
+  <div class="note">The notebook holds a second, later expression for this same coefficient carrying an explicit <b>(ς−1)</b> factor, which would flip sign at ς=1. It is not correct. It descends from solving the constraint for a′ — one root of a quadratic, simplified under a fixed sign assumption — followed by a hand-patched term insertion. The value above is the one that follows from the two linear equations.</div>
+</section>
+
+<section>
+  <div class="col">
+    <h2 class="sec"><span class="num">§6</span> The corridor</h2>
+    <p class="dek">Two singular surfaces, and where ϖ₀=1 sits between them.</p>
+    <p>The reduced system has <em>two</em> surfaces where it degenerates, from the two places identified in §2:</p>
+  </div>
+  <div class="eq col"><span class="lbl">15 · The two walls</span>ϖ = √ς    Φ mass term vanishes — the elimination is singular
+ϖ = 2√ς   effective Planck mass vanishes — the graviton kinetic term flips</div>
+  <div class="col">
+    <p>Both cross the radiation line ϖ=1, and at telling places: <span class="m">√ς = 1</span> at ς=1, and <span class="m">2√ς = 1</span> at ς=¼. So the starting point ϖ₀=1 lies <strong>strictly between the two walls exactly when ¼ &lt; ς &lt; 1</strong> — the whole region of interest. For ς&gt;1 it lies below both.</p>
+    <p>That is the real asymmetry between the two regimes. It is not that ς&lt;1 drifts the wrong way; it is that ς&lt;1 starts inside a corridor with both ends closed, while ς&gt;1 starts outside it.</p>
+  </div>
+
+  <figure>
+    <div class="fig-box">
+      <svg viewBox="0 0 720 400" role="img" aria-label="Two curves, varpi equals root sigma and varpi equals two root sigma, cross the horizontal line varpi equals one at sigma equals one and sigma equals one quarter. Between those values the line lies inside the corridor formed by the two curves; outside it the line lies below both.">
+        <defs>
+          <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="7" stroke="var(--bad-line)" stroke-width="1.5" opacity=".5"/>
+          </pattern>
+          <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+            <path d="M0,1 L7,4.5 L0,8 z" fill="var(--ink-2)"/>
+          </marker>
+        </defs>
+
+        <!-- corridor between the two walls -->
+        <path d="M80,286.4 L180,264.2 L280,247.2 L380,232.9 L480,220.2 L580,208.8 L680,198.3
+                 L680,56.5 L580,77.6 L480,100.4 L380,125.7 L280,154.4 L180,188.5 L80,232.9 Z"
+              fill="url(#hatch)" opacity=".85"/>
+        <path d="M80,286.4 L180,264.2 L280,247.2 L380,232.9 L480,220.2 L580,208.8 L680,198.3
+                 L680,56.5 L580,77.6 L480,100.4 L380,125.7 L280,154.4 L180,188.5 L80,232.9 Z"
+              fill="var(--bad-soft)" opacity=".4"/>
+
+        <line x1="80" y1="340" x2="690" y2="340" stroke="var(--rule-strong)" stroke-width="1"/>
+        <line x1="80" y1="40" x2="80" y2="340" stroke="var(--rule-strong)" stroke-width="1"/>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-3)">
+          <line x1="80" y1="340" x2="80" y2="345" stroke="var(--rule-strong)"/><text x="80" y="360" text-anchor="middle">0.25</text>
+          <line x1="180" y1="340" x2="180" y2="345" stroke="var(--rule-strong)"/><text x="180" y="360" text-anchor="middle">0.5</text>
+          <line x1="380" y1="340" x2="380" y2="345" stroke="var(--rule-strong)"/><text x="380" y="360" text-anchor="middle">1.0</text>
+          <line x1="580" y1="340" x2="580" y2="345" stroke="var(--rule-strong)"/><text x="580" y="360" text-anchor="middle">1.5</text>
+          <line x1="75" y1="232.9" x2="80" y2="232.9" stroke="var(--rule-strong)"/><text x="68" y="236" text-anchor="end">1.0</text>
+          <line x1="75" y1="125.7" x2="80" y2="125.7" stroke="var(--rule-strong)"/><text x="68" y="129" text-anchor="end">2.0</text>
+        </g>
+        <text x="385" y="384" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--ink-2)">ς</text>
+        <text x="26" y="196" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--ink-2)" transform="rotate(-90 26 196)" text-anchor="middle">ϖ</text>
+
+        <!-- radiation line; solid where trapped -->
+        <line x1="80" y1="232.9" x2="680" y2="232.9" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <line x1="80" y1="232.9" x2="380" y2="232.9" stroke="var(--accent)" stroke-width="3.2"/>
+
+        <!-- walls -->
+        <path d="M80,286.4 L180,264.2 L280,247.2 L380,232.9 L480,220.2 L580,208.8 L680,198.3"
+              fill="none" stroke="var(--bad)" stroke-width="2.4"/>
+        <path d="M80,232.9 L180,188.5 L280,154.4 L380,125.7 L480,100.4 L580,77.6 L680,56.5"
+              fill="none" stroke="var(--bad)" stroke-width="2.4" stroke-dasharray="7 4"/>
+
+        <!-- crossings -->
+        <circle cx="380" cy="232.9" r="4.5" fill="var(--bg)" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="80"  cy="232.9" r="4.5" fill="var(--bg)" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="380" y1="232.9" x2="380" y2="340" stroke="var(--rule-strong)" stroke-width="1" stroke-dasharray="3 4"/>
+
+        <!-- sigma = 0.6 : trapped, both exits -->
+        <line x1="220" y1="232.9" x2="220" y2="252" stroke="var(--ink-2)" stroke-width="2" marker-end="url(#ar)"/>
+        <line x1="220" y1="232.9" x2="220" y2="180" stroke="var(--ink-2)" stroke-width="2" marker-end="url(#ar)"/>
+        <circle cx="220" cy="232.9" r="3.6" fill="var(--ink)"/>
+        <g stroke="var(--bad)" stroke-width="2.2">
+          <line x1="215" y1="252.5" x2="225" y2="262.5"/><line x1="225" y1="252.5" x2="215" y2="262.5"/>
+          <line x1="215" y1="168.5" x2="225" y2="178.5"/><line x1="225" y1="168.5" x2="215" y2="178.5"/>
+        </g>
+
+        <!-- sigma = 1.5 : free -->
+        <line x1="580" y1="232.9" x2="580" y2="300" stroke="var(--ink-2)" stroke-width="2" marker-end="url(#ar)"/>
+        <circle cx="580" cy="232.9" r="3.6" fill="var(--ink)"/>
+
+        <g font-family="IBM Plex Sans, sans-serif" font-size="12.5">
+          <text x="674" y="192" fill="var(--bad)" text-anchor="end" font-weight="600">ϖ = √ς</text>
+          <text x="674" y="50" fill="var(--bad)" text-anchor="end" font-weight="600">ϖ = 2√ς</text>
+          <text x="396" y="222" fill="var(--accent)" font-weight="600">ϖ₀ = 1</text>
+          <text x="232" y="288" fill="var(--ink-2)" font-size="11.5">ς=0.6 · both exits closed</text>
+          <text x="592" y="322" fill="var(--ink-2)" font-size="11.5">ς=1.5 · free</text>
+          <text x="388" y="330" fill="var(--ink-3)" font-size="11.5">ς=1</text>
+          <text x="90" y="330" fill="var(--ink-3)" font-size="11.5">ς=¼</text>
+          <text x="150" y="212" fill="var(--bad)" font-size="11.5" font-weight="600">corridor</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>The two walls cross ϖ=1 at ς=¼ and ς=1. Between those values (heavy segment) the radiation fixed point is trapped inside the corridor: the analytic branch exits downward through <span class="m">ϖ²=ς</span>, the logarithmic branch upward through <span class="m">ϖ²=4ς</span>. For ς&gt;1 the fixed point lies below both walls and the downward drift simply leaves.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="col">
+    <h2 class="sec"><span class="num">§7</span> The upward branch</h2>
+    <p class="dek">It exists — and it is not a cosmology.</p>
+    <p>The constraint is <em>quadratic</em> in ϖ′, so at ϖ=1 there are two admissible values, not one. In pure radiation the constant term vanishes identically on the a₁ relation, and the quadratic factors:</p>
+  </div>
+
+  <div class="eq col"><span class="lbl">16 · Both roots at ϖ=1, pure radiation</span>ϖ′ = 0                                    ← the analytic branch of §5
+
+              −4H₀(ς−1)√(Ω_r0 ς)
+ϖ′ = ──────────────────────────────────     ← the second branch
+     √(mυ₂(4ς−1)) · (4ς²+ς−1) · a</div>
+
+  <div class="col">
+    <p>Its sign is set by <span class="m">−(ς−1)</span>, so it flips at exactly ς=1 — and it is <strong>positive for every ς&lt;1</strong>:</p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <caption>The second root, normalised as ϖ′·a/a₁</caption>
+      <thead><tr><th class="n">ς</th><th class="n">0.5</th><th class="n">0.6</th><th class="n">0.75</th><th class="n">0.9</th><th class="n">0.99</th><th class="n">1.01</th><th class="n">1.25</th><th class="n">1.5</th><th class="n">2.0</th></tr></thead>
+      <tbody><tr><td class="n">ϖ′·a/a₁</td>
+        <td class="n"><span class="ok">+2.00</span></td><td class="n"><span class="ok">+0.77</span></td><td class="n"><span class="ok">+0.25</span></td>
+        <td class="n"><span class="ok">+0.06</span></td><td class="n"><span class="ok">+0.005</span></td>
+        <td class="n">−0.005</td><td class="n">−0.08</td><td class="n">−0.11</td><td class="n">−0.12</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <p>Note what this root always does: it moves <em>away</em> from <span class="m">ϖ=√ς</span> on both sides — upward for ς&lt;1, downward for ς&gt;1. It is the branch that respects the geometry of the lower wall. Since <span class="m">ϖ′ ∝ 1/a ∝ 1/τ</span>, it integrates to</p>
+  </div>
+
+  <div class="eq col"><span class="lbl">17 · The second branch is logarithmic</span>ϖ  =  1 + K ln(τ/τ₀) + …  ,     K = 2(1−ς)/(4ς²+ς−1)</div>
+
+  <div class="col">
+    <p>which is precisely why the power series of §5 never found it: the ansatz <span class="m">ϖ = 1 + Σvᵢτⁱ</span> admits no logarithm. Two properties then rule it out as a cosmology.</p>
+
+    <h3>It has no τ→0 limit</h3>
+    <p>Because the growth is logarithmic in τ/τ₀, the solution never forgets where it was started. Integrating to the <em>same</em> physical time τ=10⁻⁴ from different injection points:</p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <caption>ϖ at fixed τ=10⁻⁴, ς=0.6, varying only the starting time</caption>
+      <thead><tr><th class="n">τ₀</th><th class="n">10⁻⁶</th><th class="n">10⁻⁷</th><th class="n">10⁻⁸</th><th class="n">10⁻⁹</th></tr></thead>
+      <tbody><tr><td class="n">ϖ(10⁻⁴)</td><td class="n">10.2</td><td class="n">27.4</td><td class="n">71.4</td><td class="n">179.5</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <p>It grows by a factor ~2.6 per decade of τ₀, with no sign of converging — in fact faster than the linearised logarithm, once ϖ leaves 1 and the nonlinear terms take over. <strong>There is no limiting solution</strong>, so this branch has no radiation era to be matched onto, and what looks like an initial condition is really just a choice of where to inject it.</p>
+
+    <h3>It exits through the upper wall</h3>
+    <p>Avoiding <span class="m">ϖ²=ς</span> costs it the other surface. Integrating the full system:</p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <caption>Upward branch: crossing of the effective-Planck-mass surface</caption>
+      <thead><tr><th class="n">ς</th><th class="n">4ς</th><th class="n">max ϖ² on the run</th><th class="n">crosses ϖ²=4ς at τ</th><th>Planck mass</th></tr></thead>
+      <tbody>
+        <tr class="ghost"><td class="n">0.6</td><td class="n">2.4</td><td class="n">731</td><td class="n">1.9×10⁻⁷</td><td><span class="pill hit">changes sign</span></td></tr>
+        <tr class="ghost"><td class="n">0.9</td><td class="n">3.6</td><td class="n">6.1</td><td class="n">2.3×10⁻⁴</td><td><span class="pill hit">changes sign</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <p>For ς=0.6 the crossing happens at τ=1.9×10⁻⁷, barely after the injection point τ₀=10⁻⁷ — the run spends essentially its entire history on the far side, where <span class="m">4ς−ϖ²&lt;0</span> and the graviton kinetic term has the wrong sign. Unlike the lower wall this surface is not a singularity of the equations, so the integration crosses it smoothly and without complaint. Nothing stops; the theory simply changes character.</p>
+    <div class="note"><b>So the upward branch is real, and the instinct that it should exist was right.</b> The constraint does carry a second root, its sign does flip at ς=1, and it does move away from ϖ²=ς. What it does not do is provide a ς&lt;1 cosmology: it has no early-time limit, and it leaves through the opposite wall almost immediately.</div>
+  </div>
+</section>
+
+<section class="col">
+  <h2 class="sec"><span class="num">§8</span> The correspondence: rate, not sign</h2>
+  <p class="dek">Correcting an earlier reading of the equilibrium curve.</p>
+  <p>Rebuilt independently, the regular root of the constant-ϖ correspondence runs as w goes from 1/3 to 0:</p>
+  <div class="tw">
+    <table>
+      <caption>Equilibrium root x_reg = ϖ² across the radiation→matter transition</caption>
+      <thead><tr><th>ς</th><th class="n">surface at x=ς</th><th class="n">x_reg: w=1/3 → 0</th><th>direction</th></tr></thead>
+      <tbody>
+        <tr><td class="n">0.6</td><td class="n">0.6</td><td class="n">1 → 0.888</td><td>↓</td></tr>
+        <tr><td class="n">0.9</td><td class="n">0.9</td><td class="n">1 → 0.982</td><td>↓</td></tr>
+        <tr><td class="n">1.5</td><td class="n">1.5</td><td class="n">1 → 1.043</td><td>↑</td></tr>
+        <tr><td class="n">2.0</td><td class="n">2.0</td><td class="n">1 → 1.053</td><td>↑</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>With <span class="m">x_reg = 1 − 3(ς−1)ε/(8ς²) + …</span> and <span class="m">ε = w − 1/3 &lt; 0</span>, for ς&lt;1 the correspondence gives <span class="m">x_reg &lt; 1</span>. So the correspondence and the dynamical solution both move <em>downward</em> from the radiation point. The earlier expectation that the ς&lt;1 branch should move to larger ϖ was a misreading of this sign; <span class="m">v₁&lt;0</span> is the correct direction.</p>
+  <p>The discrepancy is a rate, not a direction:</p>
+  <div class="eq"><span class="lbl">14 · Rate mismatch</span>v₁ᶜᵒʳʳ / v₁ᵈʸⁿ  =  − (ς−1) / [ ς(4ς−1) ]
+
+  ς = 0.9  →  0.043   (same sign, ~23× too fast)
+  ς = 1.5  → −0.067   (opposite sign)</div>
+  <p>The equilibrium curve never reaches the surface — 0.888 at ς=0.6 stays well above 0.6. But the dynamical solution moves ~23× faster and overshoots it entirely, which is how it reaches <span class="m">ϖ²=ς</span> deep in radiation rather than gently tracking the curve. The correspondence is not an attractor of the dynamical system in either regime, which resolves the tension previously flagged as unexplained.</p>
+</section>
+
+<section class="col">
+  <h2 class="sec"><span class="num">§9</span> What this establishes — and what it does not</h2>
+  <p class="dek">The boundary of the claim.</p>
+  <p><strong>Established here.</strong> ϖ₀=±1 is the unique regular radiation fixed point. <span class="m">v₁</span> is unique and negative for all ς&gt;¼. The two factors <span class="m">ς−ϖ₀²</span> and <span class="m">(4ς²−1)ϖ₀²+ς(5−8ς)</span> have opposite signs on either side of ς=1 and cancel in <span class="m">a₁²</span>. For ς&lt;1 the downward drift therefore runs into <span class="m">ϖ²=ς</span>, where the Φ elimination is singular; for ς&gt;1 the identical drift moves away from it. All of this is independent of what one calls those inequalities.</p>
+  <p><strong>Not established here.</strong> That either inequality is a no-ghost or stability condition. Both were read off coefficients of the <em>minisuperspace</em> Lagrangian, and that is not sufficient grounds for the terminology:</p>
+  <ul>
+    <li>The gravitational scale-factor kinetic term has an unusual sign structure by nature — the conformal mode — so a negative coefficient there is not by itself evidence of a ghost.</li>
+    <li>Φ is auxiliary. The sign of its Φ² coefficient is not automatically a propagating-ghost criterion.</li>
+  </ul>
+  <p>What <em>is</em> verified is an identity: these two inequalities are exactly the sign conditions on those two coefficients, and they coincide with the two constraints already enforced in the numerical pipeline. If those constraints were derived from a full perturbative or Hamiltonian stability analysis elsewhere, then <span class="m">ϖ₀²=1 ⇒ ς&gt;1</span> is a genuine physical restriction and the conclusion is strong. If they were only ever read off the minisuperspace Lagrangian, that provenance should be settled before the terminology goes into a paper. <strong>The dynamical result stands either way</strong> — only its interpretation as a stability statement depends on it.</p>
+</section>
+
+<section class="col">
+  <h2 class="sec"><span class="num">§10</span> Hypothesis ledger</h2>
+  <p class="dek">Every candidate tested, and what closed it.</p>
+  <ol class="led">
+    <li><span class="h">H1</span><span>Missing initial-condition sign</span><span class="pill out">ruled out</span>
+      <span class="why">Both leading-order equations are linear in {a₂,v₁}, so v₁ is unique — within the analytic class. See H7 for the branch this does not cover.</span></li>
+    <li><span class="h">H2</span><span>The Lagrangian square root hides a ς-dependent sign branch</span><span class="pill out">ruled out</span>
+      <span class="why">Φ ∝ sgn and L is quadratic in Φ plus sgn×linear, so elimination yields sgn² only. Eq(+1) − Eq(−1) = 0 in all three equations.</span></li>
+    <li><span class="h">H3</span><span>The later ϖ₁ ∝ (ς−1) expression is the correct one</span><span class="pill out">ruled out</span>
+      <span class="why">It rests on one root of a quadratic simplified under a fixed sign assumption, plus a hand-patched term. The two linear equations give the other value.</span></li>
+    <li><span class="h">H4</span><span>ϖ₀ is free; the true radiation value is ς-dependent</span><span class="pill out">ruled out</span>
+      <span class="why">The pure-radiation ϖ equation factors as (ϖ₀−1)(ϖ₀+1)(ς−ϖ₀²); the third root is the singular surface itself.</span></li>
+    <li><span class="h">H5</span><span>An algebra or elimination error in the derivation</span><span class="pill out">ruled out</span>
+      <span class="why">dF1/dτ is identically zero on the solution surface, and the independently derived ϖ″ matches the notebook's stored expression exactly.</span></li>
+    <li><span class="h">H6</span><span>Both sign-sensitive factors flip together at ς=1 and cancel</span><span class="pill hit">confirmed</span>
+      <span class="why">ς−ϖ₀² = ς−1 and the bracket = −(4ς−1)(ς−1) have opposite signs for all ς&gt;¼; their ratio sets a₁² and is positive on both sides.</span></li>
+    <li><span class="h">H7</span><span>A second, upward branch exists for ς&lt;1</span><span class="pill hit">confirmed — but not a cosmology</span>
+      <span class="why">The constraint is quadratic in ϖ′; the second root is positive for all ς&lt;1 and flips sign at ς=1. It is logarithmic, so it has no τ→0 limit, and it crosses ϖ²=4ς almost immediately. Real branch, not a viable early universe.</span></li>
+  </ol>
+</section>
+
+<section class="col">
+  <h2 class="sec"><span class="num">§11</span> Consequences</h2>
+  <p class="dek">What to do with this.</p>
+  <ul>
+    <li><strong>Settle the provenance of the two inequalities first.</strong> Everything downstream — whether ς&gt;1 is a physical requirement or merely the region where this particular solution survives — turns on that one question.</li>
+    <li><strong>Both walls matter, not just ϖ²=ς.</strong> The corridor ¼&lt;ς&lt;1 is bounded below by the elimination singularity and above by the effective-Planck-mass surface. Only the lower wall stops the integrator; the upper one is crossed silently, so it needs its own monitor.</li>
+    <li><strong>Treat the algebraically real x_R root with suspicion.</strong> It is a genuine real root of the ϖ field equation, which is why it looked like a live ς&lt;1 branch, but it sits at <span class="m">ϖ²&gt;ς</span>, on the far side of the surface from the region where the elimination is valid.</li>
+    <li><strong>Carry the individual signs, not just the simplified expression.</strong> The failure mode is silent precisely because simplification cancels the two flips. Monitoring <span class="m">sign(ς−ϖ²)</span> and the bracket separately would have caught this at once — and will catch it again if ϖ approaches √ς from the other side.</li>
+    <li><strong>Re-examine the ς&gt;1 drift on its own terms.</strong> ϖ² falling from 1 to 0.45 by τ=0.155 is ~15× faster than the quasi-static equilibrium and is not obviously physical. The surface was masking this question, not answering it.</li>
+    <li><strong>Discard the later ϖ₁ chain</strong> and everything downstream of the hand-patched coefficient list.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Original notebook untouched. Working copy, full hypothesis log and extracted inputs kept alongside this report.</p>
+  <p>Derivation rebuilt from the action with xAct; equations cross-checked against the notebook's own stored expressions.</p>
+</footer>
+
+</div>

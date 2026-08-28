@@ -1,0 +1,358 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\newcommand{\Mp}{M_{\mathrm{P}}}
+\newcommand{\Om}{\Omega_{m,0}}
+\newcommand{\Or}{\Omega_{r,0}}
+\newcommand{\OL}{\Omega_{\Lambda,0}}
+\newcommand{\ups}{\upsilon_2}
+
+\title{A scaling symmetry of the TorC background equations:\\
+why $\ups$ is not a parameter, and why only ratios of the $\Omega$'s are measurable}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Every term of the TorC background Friedmann equation is homogeneous of degree
+two in time derivatives. This implies an exact one-parameter scaling symmetry
+under which the three density parameters are multiplied by a common factor,
+$H$ and $\dot\varpi$ by its square root, and $\varpi(a)$ is unchanged. The
+observable $E(z)=H/H(a{=}1)$ is invariant. Three apparently distinct facts are
+consequences of this single symmetry: (i) $\ups$ does not affect background
+distances; (ii) $\Om$, $\Or$ and $\OL$ are measurable only through their
+ratios; (iii) the posterior in the $(\Om,\OL)$ plane is an elongated wedge
+pointing at the origin. All statements are verified numerically against the
+solver to $\sim10^{-9}$.
+\end{abstract}
+
+\section{Setup}
+
+The Lagrangian is
+\begin{align}
+\mathcal{L} &= \frac{3\Mp^2\ups}{4\varsigma}\left[\tfrac12(4\varsigma-\varpi^2)R
+ - g^{\mu\nu}\partial_\mu\varpi\,\partial_\nu\varpi
+ + \varsigma\phi^2 - \varpi^2\phi^2
+ + \tfrac43\sqrt{J_\mu J^\mu}\right] - \Mp^2\Lambda + \mathcal{L}_{\mathrm M},
+\label{eq:lagrangian}\\
+J_\mu &\equiv \varpi^3\partial_\mu(\phi/\varpi) - \partial_\mu\phi .
+\end{align}
+Note for later that $\ups$ occurs \emph{once}, in the overall prefactor, and
+nowhere inside the bracket, in $J_\mu$, or in $\mathcal{L}_{\mathrm M}$.
+
+The background Friedmann equation is
+\begin{equation}
+H^2 = \frac{1}{\varpi^2-4\varsigma}\left[
+ -\frac{4H_0^2\varsigma}{\ups}S(a)
+ + 2H\varpi\dot\varpi
+ + \dot\varpi^2
+ + \frac{4\big(H\varsigma(\varpi^2-1) + \varsigma\varpi\dot\varpi\big)^2}
+        {\varsigma-\varpi^2}\right],
+\label{eq:friedmann}
+\end{equation}
+where we abbreviate the matter source
+\begin{equation}
+S(a) \equiv \Or a^{-4} + \Om a^{-3} + \OL .
+\label{eq:source}
+\end{equation}
+The three density parameters appear in \eqref{eq:friedmann} only inside
+$S(a)$, and $S(a)$ appears only once.
+
+\section{The observation: every term is quadratic in rates}
+
+Call $H$ and $\dot\varpi$ \emph{rates} (one time derivative each); $H_0$ is
+also a rate. Then in \eqref{eq:friedmann}:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+term & rates \\
+\midrule
+$H^2$ & 2 \\
+$H_0^2 S(a)/\ups$ & 2 \\
+$2H\varpi\dot\varpi$ & 2 \\
+$\dot\varpi^2$ & 2 \\
+$4\big(H\varsigma(\varpi^2-1)+\varsigma\varpi\dot\varpi\big)^2/(\varsigma-\varpi^2)$ & 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every term carries exactly two. The quantities $\varpi$, $\varsigma$ and $a$
+appear at many powers but carry no time derivative and never spoil the count.
+Equation \eqref{eq:friedmann} is therefore homogeneous of degree $2$ in rates.
+
+\section{The symmetry}
+
+\begin{quote}
+\textbf{Proposition.} Let $\kappa>0$ be an arbitrary constant --- a free
+parameter labelling the transformation, with no physical meaning ($\kappa=1$ is
+the identity). It is \emph{not} the speed of light. Then the transformation
+\begin{align}
+&\Or\to \kappa^2\Or,\qquad \Om\to \kappa^2\Om,\qquad \OL\to \kappa^2\OL, \notag\\
+&H(a)\to \kappa H(a),\qquad \dot\varpi\to \kappa\dot\varpi,\qquad
+\varpi(a)\to\varpi(a),\qquad \tau\to\tau/\kappa
+\label{eq:symmetry}
+\end{align}
+leaves \eqref{eq:friedmann} invariant.
+\end{quote}
+
+\noindent\emph{Proof.} Under \eqref{eq:symmetry}, $S(a)\to \kappa^2S(a)$ since every
+term of \eqref{eq:source} is linear in the $\Omega$'s. Then term by term:
+\begin{align*}
+H^2 &\to \kappa^2H^2, \\
+\frac{4H_0^2\varsigma}{\ups}S &\to \kappa^2\,\frac{4H_0^2\varsigma}{\ups}S, \\
+2H\varpi\dot\varpi &\to (\kappa)(\kappa)\,2H\varpi\dot\varpi = \kappa^2\,2H\varpi\dot\varpi, \\
+\dot\varpi^2 &\to \kappa^2\dot\varpi^2, \\
+H\varsigma(\varpi^2-1)+\varsigma\varpi\dot\varpi
+ &\to \kappa\big[H\varsigma(\varpi^2-1)+\varsigma\varpi\dot\varpi\big]
+ \;\Longrightarrow\; (\cdot)^2 \to \kappa^2(\cdot)^2 ,
+\end{align*}
+while the prefactor $1/(\varpi^2-4\varsigma)$ and the denominator
+$\varsigma-\varpi^2$ are unchanged because $\varpi(a)$ is unchanged. Both sides
+of \eqref{eq:friedmann} acquire exactly $\kappa^2$. $\square$
+
+\subsection{Corollary: the observable is blind to it}
+
+The quantity compared with data is
+\begin{equation}
+E(z) \equiv \frac{H(z)}{H(a{=}1)}
+ \;\longrightarrow\; \frac{\kappa\,H(z)}{\kappa\,H(a{=}1)} = E(z).
+\end{equation}
+The common factor $\kappa$ cancels between numerator and denominator. The symmetry
+multiplies $H$ by the \emph{same} factor at every epoch, and $E$ is constructed
+precisely to divide out the overall rate.
+
+\subsection{Three equivalent statements of the same symmetry}
+
+Because the $\Omega$'s enter \eqref{eq:friedmann} only in the combination
+$H_0^2\Omega/\ups$, the following are the same transformation:
+\begin{equation}
+\Omega_i \to \kappa^2\Omega_i
+\quad\Longleftrightarrow\quad
+\ups \to \ups/\kappa^2
+\quad\Longleftrightarrow\quad
+\tau \to \tau/\kappa .
+\label{eq:three}
+\end{equation}
+The last form is the statement that the symmetry is a reparametrisation of
+time: a rescaling of the clock, not of the physics.
+
+\section{Consequence 1: $\ups$ is not a background parameter}
+
+By \eqref{eq:three}, changing $\ups$ is a pure time rescaling. Writing
+$\tau=\sqrt{\ups}\,\sigma$ removes $\ups$ from the equations of motion and from
+the early-time series initial conditions entirely, so $a(\sigma)$ and
+$\varpi(\sigma)$ are the same functions for every $\ups$. Since
+$H\propto a^{-2}\,\mathrm da/\mathrm d\tau$ and
+$\mathrm da/\mathrm d\tau = a'(\sigma)/\sqrt{\ups}$, we obtain
+\begin{equation}
+H(a;\ups) = \frac{H(a;\ups{=}1)}{\sqrt{\ups}}
+\end{equation}
+at \emph{every} epoch, hence $E(z)$ is independent of $\ups$.
+
+This is visible in \eqref{eq:lagrangian}: $\ups$ appears only in the overall
+prefactor $3\Mp^2\ups/4\varsigma$, so it is absorbed by the renaming
+$\widetilde\Mp^2\equiv\Mp^2\ups$, $\widetilde\Lambda\equiv\Lambda/\ups$:
+\begin{equation}
+\mathcal{L} = \frac{3\widetilde\Mp^2}{4\varsigma}\big[\;\cdots\;\big]
+ - \widetilde\Mp^2\widetilde\Lambda + \mathcal{L}_{\mathrm M}.
+\end{equation}
+By contrast $\varsigma$ appears in the prefactor \emph{and} in
+$(4\varsigma-\varpi^2)R$ \emph{and} in $\varsigma\phi^2$; three independent
+occurrences, so no single renaming removes it. That is precisely why
+$\varsigma$ is a physical parameter and $\ups$ is not.
+
+\paragraph{Practical consequence.} $\ups$ and $H_0$ enter only as $H_0^2/\ups$
+and are therefore exactly degenerate. They must never be sampled together. In
+the pipeline $\ups$ is fixed (\texttt{MUPS2\_FIXED}), which is necessary rather
+than merely convenient. $\ups$ becomes physical at perturbation level, where a
+comoving wavenumber $k$ introduces a scale that does not co-rescale with $\tau$.
+
+\section{Consequence 2: only ratios of the $\Omega$'s are measurable}
+
+The symmetry \eqref{eq:symmetry} multiplies all three $\Omega$'s by a common
+factor. Any function of $(\Or,\Om,\OL)$ that survives in $E(z)$ must therefore
+be invariant under that common rescaling, i.e.\ must be a function of the
+ratios alone. Explicitly, factoring \eqref{eq:source},
+\begin{equation}
+S(a) = \Or\left[a^{-4} + \frac{\Om}{\Or}a^{-3} + \frac{\OL}{\Or}\right],
+\end{equation}
+the prefactor $\Or$ sets the \emph{height} of the source and is absorbed by
+\eqref{eq:three}; the bracket sets its \emph{shape} and depends on two ratios
+only. The shape is fixed by the two crossover epochs
+\begin{equation}
+\Or a^{-4} = \Om a^{-3} \;\Longrightarrow\; 1+z_{\mathrm{eq}} = \frac{\Om}{\Or},
+\qquad
+\Om a^{-3} = \OL \;\Longrightarrow\; 1+z_\Lambda = \left(\frac{\OL}{\Om}\right)^{1/3},
+\end{equation}
+both manifestly ratios. Three input numbers thus carry two physical
+(shape) numbers plus one unobservable (height).
+
+\section{Consequence 3: the $(\Om,\OL)$ wedge}
+
+In the fit $\Or$ is held fixed, so the exact symmetry cannot be realised; only
+the two-parameter motion
+\begin{equation}
+(\Om,\OL)\to(\kappa^2\Om,\,\kappa^2\OL)
+\end{equation}
+is available. This differs from the exact symmetry only by the piece that was
+not rescaled,
+\begin{equation}
+\Delta S = (\kappa^2-1)\,\Or a^{-4},
+\end{equation}
+which is the \emph{sole} source of constraint along that direction. Over the
+redshift range covered by DESI DR2 BAO, $\Or a^{-4}$ is below $0.1\%$ of $S$
+(Table~\ref{tab:rad}), so the symmetry is only weakly broken and the posterior
+stretches into a wedge pointing at the origin, with slope $\OL/\Om$ and angular
+width set by the uncertainty on that ratio.
+
+\section{Comparison with $\Lambda$CDM}
+
+The same symmetry exists in $\Lambda$CDM. From
+$H^2 = H_0^2(\Om a^{-3}+\Or a^{-4}+\OL)$, scaling all three $\Omega$'s by $\kappa^2$
+gives $H\to cH$ and leaves $E=H/H_0$ unchanged. $\Lambda$CDM escapes the
+degeneracy only because flatness,
+\begin{equation}
+\Om + \Or + \OL = 1,
+\label{eq:flat}
+\end{equation}
+is a relation among the $\Omega$'s alone and forbids $\kappa\neq1$. Equation
+\eqref{eq:flat} is simultaneously the Friedmann constraint at $a=1$ and the
+normalisation $E(0)=1$; it supplies a canonical denominator, so that
+$\Om = \Om/(\Om{+}\Or{+}\OL)$ identically and $\Om$ may be read as a fraction.
+
+TorC possesses a constraint at $a=1$ as well, but it involves $\varpi_0$ and
+$\dot\varpi_0$ and does not reduce to a relation among the $\Omega$'s. No
+canonical denominator exists, so the normalisation must be fixed by convention
+--- in the pipeline, by hardcoding $\Or=8.24\times10^{-5}$. Consequently $\Om$
+alone is a ratio with respect to an arbitrary reference, whereas
+\begin{equation}
+\frac{\Om}{\Om+\Or+\OL}
+\end{equation}
+is invariant under \eqref{eq:symmetry} and is the correct analogue of the
+$\Lambda$CDM $\Om$.
+
+Both theories measure only ratios. The difference is that $\Lambda$CDM has a
+natural denominator and TorC does not.
+
+\section{Numerical verification}
+
+All checks use the pipeline solver (Dopri8, \texttt{rtol}=\texttt{atol}=$10^{-8}$
+unless stated); quoted residuals are at solver tolerance.
+
+\begin{table}[h]\centering
+\caption{The symmetry acting at the posterior-mean point, $\kappa^2=4$. The source
+is multiplied by $\kappa^2$ and $H$ by $c$ at \emph{every} epoch, so $E$ is
+unchanged.}
+\begin{tabular}{lrrrrrr}
+\toprule
+$a$ & $S$ $($\kappa{=}1$)$ & $S$ $(\kappa^2{=}4)$ & ratio & $H$ $($\kappa{=}1$)$ & $H$ $(\kappa^2{=}4)$ & ratio \\
+\midrule
+$10^{-6}$ & $8.2693\times10^{19}$ & $3.3077\times10^{20}$ & 4.00 & $8.7004\times10^{11}$ & $1.7401\times10^{12}$ & 2.00000 \\
+$10^{-4}$ & $1.1167\times10^{12}$ & $4.4668\times10^{12}$ & 4.00 & $1.0342\times10^{8}$ & $2.0685\times10^{8}$ & 2.00000 \\
+$10^{-2}$ & $3.0094\times10^{5}$ & $1.2038\times10^{6}$ & 4.00 & $6.8963\times10^{4}$ & $1.3793\times10^{5}$ & 2.00000 \\
+$10^{-1}$ & $2.9453\times10^{2}$ & $1.1781\times10^{3}$ & 4.00 & $2.2076\times10^{3}$ & $4.4152\times10^{3}$ & 2.00000 \\
+$0.5$ & $3.3529$ & $13.412$ & 4.00 & $2.2513\times10^{2}$ & $4.5026\times10^{2}$ & 2.00000 \\
+$1.0$ & $1.3028$ & $5.2111$ & 4.00 & $1.2582\times10^{2}$ & $2.5163\times10^{2}$ & 2.00000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent The resulting $E(z)$ agree to $1.0000000$ in ratio at every tabulated
+$a$; across $\kappa^2\in[0.5,10]$ the maximum deviation is
+$\max|E/E_0-1|\sim10^{-9}$. Holding the two ratios fixed while varying the
+overall scale by a factor $10^{4}$ ($\Om$ from $0.003$ to $30$) gives
+$\max|E/E_0-1| = 4.4\times10^{-9}$.
+
+\begin{table}[h]\centering
+\caption{Radiation's share of the source over the DESI DR2 BAO range. This is
+the only term breaking the $(\Om,\OL)$ degeneracy.}
+\label{tab:rad}
+\begin{tabular}{lrr}
+\toprule
+$z$ & $\Or a^{-4}$ & share of $S$ \\
+\midrule
+0.0 & $8.240\times10^{-5}$ & $0.0063\%$ \\
+0.5 & $4.172\times10^{-4}$ & $0.0209\%$ \\
+1.0 & $1.318\times10^{-3}$ & $0.0393\%$ \\
+2.0 & $6.674\times10^{-3}$ & $0.0748\%$ \\
+2.6 & $1.384\times10^{-2}$ & $0.0943\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]\centering
+\caption{Cost in log-likelihood of moving along the degenerate direction.
+Scaling all three $\Omega$'s is exactly free; scaling only $\Om$ and $\OL$ is
+almost free. For reference $1\sigma$ corresponds to $\Delta\ln\mathcal{L}\approx0.5$.}
+\begin{tabular}{lrr}
+\toprule
+$\kappa^2$ & $\Delta\ln\mathcal{L}$, $\Om,\OL$ only & $\Delta\ln\mathcal{L}$, all three \\
+\midrule
+0.70 & $-0.0063$ & $2.6\times10^{-8}$ \\
+1.00 & $\phantom{-}0.0000$ & $0$ \\
+1.50 & $-0.0179$ & $2.4\times10^{-8}$ \\
+2.00 & $-0.0437$ & $8.8\times10^{-9}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{$\ups$.} Rate-homogeneity applied to the second-order form of the
+equations implies the identity
+\begin{equation}
+f\big(a,\lambda\dot a,\varpi,\lambda\dot\varpi,\;\ups/\lambda^2\big)
+ = \lambda^2\, f\big(a,\dot a,\varpi,\dot\varpi,\;\ups\big),
+\label{eq:homog}
+\end{equation}
+valid for any $\lambda$. Equation \eqref{eq:homog}
+holds to $7\times10^{-12}$ and $9\times10^{-15}$ for the two vector-field
+components over 2000 random points (symbolically exact, verified with
+\textsc{sympy}). The series initial conditions rescale consistently: with
+$\sigma=\tau/\sqrt{\ups}$, the values of $\sigma_{\mathrm{ini}}$, $a$, $\varpi$
+and $\sqrt{\ups}\,\mathrm da/\mathrm d\tau$ agree across $\ups\in[0.5,3]$ to
+$1.6\times10^{-16}$. Measured $H$ ratios reproduce $\ups^{-1/2}$ to
+$6\times10^{-10}$, and $\max|E/E_0-1|\le1.9\times10^{-9}$.
+
+\paragraph{$\Lambda$CDM.} As implemented with flatness, scaling $\Om$ and $\Or$
+together costs $\Delta\ln\mathcal{L}=-2472$ and $-1838$ for $\kappa^2=0.5,2$. Freeing
+$\OL$ and normalising by $E(0)$ restores the symmetry exactly:
+$\Delta\ln\mathcal{L}=0$ for $\kappa^2$ up to $10$.
+
+\section{Summary of measured quantities}
+
+\begin{table}[h]\centering
+\caption{DESI DR2 BAO, 1000 live points. Invariant combinations are measurable;
+$\Om$ and $\OL$ individually inherit the convention $\Or=8.24\times10^{-5}$ and
+are additionally limited by the prior along the wedge ($7.3\%$ of the posterior
+mass lies within $0.05$ of the $\OL$ prior ceiling of $1.5$).}
+\small
+\begin{tabular}{lrl}
+\toprule
+quantity & value & status \\
+\midrule
+$\Om/\Or = 1+z_{\mathrm{eq}}$ & $3552 \pm 1606$ & invariant \\
+$\OL/\Om$ & $3.75 \pm 1.13$ & invariant (wedge slope) \\
+$z_\Lambda = (\OL/\Om)^{1/3}-1$ & $0.539 \pm 0.150$ & invariant \\
+$\Om/(\Om{+}\Or{+}\OL)$ & $0.2216 \pm 0.0477$ & invariant \\
+\midrule
+$\Om$ & $0.2927 \pm 0.1323$ & convention-dependent \\
+$\OL$ & $1.0100 \pm 0.3475$ & convention-dependent \\
+\midrule
+$\Lambda$CDM $\Om$ & $0.2972 \pm 0.0087$ & invariant (flatness) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent The invariant $\Om/(\Om{+}\Or{+}\OL) = 0.2216\pm0.0477$ is both
+better determined than $\Om$ itself ($21\%$ versus $45\%$, since taking the
+ratio removes the spread along the wedge) and directly comparable with the
+$\Lambda$CDM value $0.2972\pm0.0087$, from which it differs by
+$\approx1.6\sigma$.
+
+\end{document}

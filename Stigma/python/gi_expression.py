@@ -1,0 +1,1 @@
+(4*stigma*(stigma - varpiConst**2))/(ups2*varpiConst**2*(5*stigma - 8*stigma**2 - varpiConst**2 + 4*stigma**2*varpiConst**2))

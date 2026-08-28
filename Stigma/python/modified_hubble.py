@@ -1,0 +1,3 @@
+def HubbleWithGiPlus(rho, wi, stigma, ups2):
+    return (2*((kappa*rho*(stigma*(3 - 9*wi) - stigma**3*(1 + 3*wi)**2 + (stigma + 3*stigma*wi)**2 + (1 + 3*wi)*Sqrt[(-1 + stigma)**2*stigma**2*(2 - 6*wi + (stigma + 3*stigma*wi)**2))**(1/2)))/(stigma*ups2*(1 + 2*stigma + 6*(-1 + stigma)*wi)*(-7 - 3*wi + 4*stigma*(1 + 3*wi)))))/(3)**(1/2)
+
