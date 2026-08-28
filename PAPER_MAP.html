@@ -1,0 +1,300 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TorC Paper Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#fbfaf8; --panel:#ffffff; --sunk:#f2f1ee;
+  --ink:#16161d; --ink-2:#3d3d4a; --ink-3:#6b6b7a;
+  --rule:#e0dfdb; --rule-2:#cbc9c4;
+  --accent:#4b3f8f; --accent-soft:#ece9f7;
+  --pink:#c2185b; --orange:#d05000; --green:#00775a; --violet:#5f4bd0; --blue:#3b62d6;
+  --ok:#00775a; --warn:#a8620a; --gap:#8a3a5c;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#111116; --panel:#191920; --sunk:#0c0c10;
+    --ink:#eceaf2; --ink-2:#b8b6c4; --ink-3:#84828f;
+    --rule:#2a2a34; --rule-2:#3b3b47;
+    --accent:#a99bef; --accent-soft:#221d3d;
+    --pink:#f06fa4; --orange:#ff9d4d; --green:#4fd6ac; --violet:#a99bef; --blue:#7fa0ff;
+    --ok:#4fd6ac; --warn:#e0a252; --gap:#e58aae;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#111116; --panel:#191920; --sunk:#0c0c10;
+  --ink:#eceaf2; --ink-2:#b8b6c4; --ink-3:#84828f;
+  --rule:#2a2a34; --rule-2:#3b3b47;
+  --accent:#a99bef; --accent-soft:#221d3d;
+  --pink:#f06fa4; --orange:#ff9d4d; --green:#4fd6ac; --violet:#a99bef; --blue:#7fa0ff;
+  --ok:#4fd6ac; --warn:#e0a252; --gap:#e58aae;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  font-size:15.5px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:920px; margin:0 auto; padding:0 28px 96px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:.9em}
+.num{font-variant-numeric:tabular-nums}
+
+/* header */
+header{padding:64px 0 34px; border-bottom:2px solid var(--ink)}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 16px}
+h1{font-family:Newsreader,Georgia,serif; font-weight:500; font-size:clamp(34px,5.4vw,54px);
+  line-height:1.06; letter-spacing:-.015em; margin:0 0 14px; text-wrap:balance}
+.standfirst{font-family:Newsreader,Georgia,serif; font-size:19px; line-height:1.5;
+  color:var(--ink-2); margin:0; max-width:62ch}
+.meta{display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:26px;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3)}
+.meta b{color:var(--ink-2); font-weight:500}
+
+/* headline result */
+.headline{margin:38px 0 12px; padding:26px 28px; background:var(--accent-soft);
+  border-left:3px solid var(--accent); border-radius:2px}
+.headline p{margin:0; font-family:Newsreader,Georgia,serif; font-size:20px; line-height:1.48}
+.headline p+p{margin-top:12px; font-size:16.5px; color:var(--ink-2)}
+
+/* sections */
+section{margin-top:56px; scroll-margin-top:20px}
+.shead{display:flex; align-items:baseline; gap:14px; padding-bottom:10px;
+  border-bottom:1px solid var(--rule-2); margin-bottom:22px}
+.sn{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--accent);
+  font-weight:500; letter-spacing:.06em; flex:none}
+h2{font-family:Newsreader,Georgia,serif; font-weight:500; font-size:27px; letter-spacing:-.01em;
+  margin:0; line-height:1.2}
+.snote{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  color:var(--ink-3); flex:none}
+h3{font-size:14px; font-weight:600; letter-spacing:.02em; margin:26px 0 8px; color:var(--ink)}
+p{margin:0 0 13px; max-width:68ch}
+ul{margin:0 0 13px; padding-left:19px; max-width:68ch}
+li{margin-bottom:6px}
+a{color:var(--accent)}
+
+/* status chips */
+.chip{display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.05em; text-transform:uppercase; padding:2px 7px; border-radius:2px;
+  border:1px solid currentColor; vertical-align:2px}
+.c-ok{color:var(--ok)} .c-warn{color:var(--warn)} .c-gap{color:var(--gap)}
+
+/* tables */
+.tw{overflow-x:auto; margin:0 0 16px; border:1px solid var(--rule); border-radius:3px; background:var(--panel)}
+table{border-collapse:collapse; width:100%; font-size:13.5px}
+th,td{padding:8px 13px; text-align:left; border-bottom:1px solid var(--rule); white-space:nowrap}
+th{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:500; background:var(--sunk)}
+tbody tr:last-child td{border-bottom:none}
+td.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+.dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; vertical-align:0}
+tr.hl td{background:var(--accent-soft); font-weight:500}
+
+/* key-value facts */
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); border-radius:3px; margin:0 0 16px}
+.fact{background:var(--panel); padding:13px 15px}
+.fact dt{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 5px}
+.fact dd{margin:0; font-family:"IBM Plex Mono",monospace; font-size:15px;
+  font-variant-numeric:tabular-nums; color:var(--ink)}
+.fact dd small{font-size:11px; color:var(--ink-3); font-family:"IBM Plex Sans",sans-serif}
+
+/* figure list */
+.fig{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; padding:11px 0;
+  border-bottom:1px solid var(--rule)}
+.fig:last-child{border-bottom:none}
+.fig .fn{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--accent); grid-column:1}
+.fig .fd{font-size:13.5px; color:var(--ink-2); grid-column:2}
+
+/* gap list */
+.gaps{list-style:none; padding:0; max-width:none}
+.gaps li{display:grid; grid-template-columns:auto 1fr; gap:12px; padding:11px 0;
+  border-bottom:1px solid var(--rule); margin:0; max-width:none}
+.gaps li:last-child{border-bottom:none}
+.gaps .g{font-size:13.8px; color:var(--ink-2)}
+.gaps .g b{color:var(--ink); font-weight:600}
+footer{margin-top:64px; padding-top:20px; border-top:1px solid var(--rule);
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3)}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Stigma Q-torsion · paper preparation</p>
+  <h1>TorC against DESI DR2</h1>
+  <p class="standfirst">Everything established so far, sorted into the sections of a paper — with the numbers, the figure that carries each claim, and what is still missing.</p>
+  <div class="meta">
+    <span><b>Data</b> DESI DR2 BAO, 13 measurements</span>
+    <span><b>Sampling</b> 1000 live, nested slice</span>
+    <span><b>Runs</b> 5 production chains</span>
+    <span><b>Tests</b> 8/8 passing</span>
+  </div>
+</header>
+
+<div class="headline">
+  <p>DESI DR2 BAO cannot distinguish TorC from ΛCDM. Across four defensible priors on ς the Bayes factor runs from 1.24 : 1 <em>for</em> TorC to 2.07 : 1 <em>against</em>, passing through exact parity — while the mean likelihood stays flat to 0.04 nats.</p>
+  <p>The fit never changes; only the Occam penalty does. That, not any single Bayes factor, is the result the paper should lead with.</p>
+</div>
+
+<!-- ================= 1 ================= -->
+<section>
+  <div class="shead"><span class="sn">§1</span><h2>Theory: an exact scaling symmetry</h2><span class="snote">strongest new material</span></div>
+
+  <p>Every term of the TorC background Friedmann equation is homogeneous of degree two in time derivatives — <code>H²</code>, <code>H₀²S(a)/υ₂</code>, <code>2Hϖϖ̇</code>, <code>ϖ̇²</code>, and the squared bracket all carry exactly two rates. This yields a one-parameter symmetry:</p>
+
+  <div class="tw"><table><tbody>
+    <tr><td class="n">Ω<sub>r,0</sub>, Ω<sub>m,0</sub>, Ω<sub>Λ,0</sub> → κ²Ω</td><td>H(a) → κH(a)</td><td>ϖ̇ → κϖ̇</td><td>ϖ(a) unchanged</td><td>τ → τ/κ</td></tr>
+  </tbody></table></div>
+
+  <p>Every term acquires exactly κ², so the equation is invariant, and <code>E(z) = H/H(a=1)</code> divides the factor out. Three separate facts collapse into this one symmetry:</p>
+
+  <ul>
+    <li><b>υ₂ is a gauge</b> — a choice of time units. Writing τ = √υ₂ σ removes it from the equations of motion <em>and</em> the series initial conditions. <span class="chip c-ok">verified 1e-9</span></li>
+    <li><b>M<sub>P</sub> is a choice of mass units</b> — absorbed into the definition Ω<sub>i</sub> = ρ<sub>i</sub>/(3M<sub>P</sub>²H₀²); it does not appear in the equations at all.</li>
+    <li><b>Only ratios of the Ω's are measurable</b> — their overall scale is the same direction as υ₂.</li>
+  </ul>
+
+  <p>ς survives as the one physical parameter because it appears in three independent places in the Lagrangian, so no single renaming removes it. υ₂ appears once.</p>
+
+  <h3>Numerical verification</h3>
+  <div class="facts">
+    <div class="fact"><dt>Homogeneity identity</dt><dd>7e-12 / 9e-15<br><small>2000 random points, both RHS components</small></dd></div>
+    <div class="fact"><dt>IC rescaling</dt><dd>1.6e-16<br><small>σ<sub>ini</sub>, a, ϖ across υ₂ ∈ [0.5, 3]</small></dd></div>
+    <div class="fact"><dt>E(z) under Ω-scaling</dt><dd>~1e-9<br><small>over a 10⁴ range in scale</small></dd></div>
+    <div class="fact"><dt>ς → 1 gives ΛCDM</dt><dd>linear in (ς−1)<br><small>3.3e-2 → 3.2e-3 → 3.4e-4</small></dd></div>
+  </div>
+
+  <p>Written up in full, with proof and tables, at <code>Stigma/latex/scaling_symmetry.tex</code> (6 pages, compiles clean). This is close to paper-ready prose.</p>
+</section>
+
+<!-- ================= 2 ================= -->
+<section>
+  <div class="shead"><span class="sn">§2</span><h2>Method: solver and sampler</h2><span class="snote">methods section</span></div>
+
+  <p>Integration in <code>x = ln a</code> from the early-time series to a fixed endpoint <code>x = 0</code>, so each evaluation is a single ODE solve on a static grid — no event, no calibration pass. Today is <em>defined</em> as a = 1 and E is normalised there, so no H₀ enters anywhere.</p>
+
+  <div class="facts">
+    <div class="fact"><dt>Solver</dt><dd>Dopri8<br><small>rtol = atol = 1e-8, ~72–105 steps</small></dd></div>
+    <div class="fact"><dt>Stiffness ratio</dt><dd>6.9 med / 301 max<br><small>not stiff — explicit RK is correct</small></dd></div>
+    <div class="fact"><dt>Backend speedup</dt><dd>3.0×<br><small>Julia threaded over unix socket</small></dd></div>
+    <div class="fact"><dt>Sampler</dt><dd>1000 / 100 / 20<br><small>live / delete / inner steps</small></dd></div>
+  </div>
+
+  <p>Two method points worth a paragraph each:</p>
+  <ul>
+    <li><b>Out-of-bounds proposals.</b> The slice sampler proposes outside the prior; an out-of-support solve burns the full step budget and, because vmapped lanes run in lockstep, stalls the whole batch. Clamping to a safe fiducial before the solve and flooring logL afterwards gives identical results at a fraction of the cost.</li>
+    <li><b>Solver choice was benchmarked properly.</b> A work–precision diagram (runtime vs <em>achieved</em> error), not runtime at a requested tolerance — those differ by orders of magnitude between solvers. Implicit solvers only look catastrophic when their root-finder inherits tolerances from the stepsize controller; set explicitly they cost ~4–10×, not 500×.</li>
+  </ul>
+</section>
+
+<!-- ================= 3 ================= -->
+<section>
+  <div class="shead"><span class="sn">§3</span><h2>Results: parameter constraints</h2></div>
+
+  <p>Posterior from the λ = 1 run (all four priors agree to well within their errors):</p>
+
+  <div class="facts">
+    <div class="fact"><dt>ς</dt><dd>1.365 ± 0.260<br><small>1.28 / 1.36 / 1.38 / 1.42 across priors</small></dd></div>
+    <div class="fact"><dt>H₀r<sub>d</sub></dt><dd>10072 ± 114 km/s<br><small>the real measurement, 37× prior shrink</small></dd></div>
+    <div class="fact"><dt>Ω<sub>m</sub></dt><dd>0.291 ± 0.139<br><small>convention-dependent — see below</small></dd></div>
+    <div class="fact"><dt>Ω<sub>Λ</sub></dt><dd>0.984 ± 0.362<br><small>1.12× prior shrink — barely constrained</small></dd></div>
+  </div>
+
+  <h3>Quote the invariants, not Ω<sub>m</sub> alone</h3>
+  <p>Because only ratios are measurable (§1), the individual Ω values inherit their scale from the hardcoded Ω<sub>r</sub> = 8.24e-5. These are the convention-free quantities:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Quantity</th><th>Value</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>Ω<sub>m</sub>/Ω<sub>r</sub> = 1+z<sub>eq</sub></td><td class="n">3552 ± 1606</td><td>matter–radiation equality</td></tr>
+      <tr><td>Ω<sub>Λ</sub>/Ω<sub>m</sub></td><td class="n">3.75 ± 1.13</td><td>slope of the wedge</td></tr>
+      <tr><td>z<sub>Λ</sub></td><td class="n">0.539 ± 0.150</td><td>Λ overtakes matter — inside the DESI range</td></tr>
+      <tr class="hl"><td>Ω<sub>m</sub>/(Ω<sub>m</sub>+Ω<sub>r</sub>+Ω<sub>Λ</sub>)</td><td class="n">0.2216 ± 0.0477</td><td>the honest analogue of ΛCDM's Ω<sub>m</sub> = 0.2972 ± 0.0087 (1.6σ)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The (Ω<sub>m</sub>, Ω<sub>Λ</sub>) wedge</h3>
+  <p>The posterior is a wedge pointing at the origin because the <em>likelihood</em> is. Scaling both Ω's together moves χ² by 0.79 across a factor of 7.5 in Ω<sub>m</sub>; changing Ω<sub>Λ</sub> alone by a factor of two moves it by 230. The degeneracy is broken only by Ω<sub>r</sub>a⁻⁴, which is under 0.1% of the source over z &lt; 2.6 — so the wedge runs until the <em>prior</em> stops it.</p>
+</section>
+
+<!-- ================= 4 ================= -->
+<section>
+  <div class="shead"><span class="sn">§4</span><h2>Results: model comparison is prior-dominated</h2><span class="snote">the headline</span></div>
+
+  <p>ΛCDM: <code class="num">ln Z = −7.734 ± 0.094</code>, D<sub>KL</sub> = 8.26. Four TorC runs, identical in every respect except the prior on ς:</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>ς prior</th><th>⟨ln L⟩</th><th>D<sub>KL</sub></th><th>ln Z</th><th>Δ ln Z</th><th>Bayes factor</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="background:var(--pink)"></span>exponential λ = 0.5</td><td class="n">0.726</td><td class="n">8.24</td><td class="n">−7.523 ± 0.095</td><td class="n">+0.213 ± 0.134</td><td class="n">1.24 : 1 TorC</td></tr>
+      <tr class="hl"><td><span class="dot" style="background:var(--orange)"></span>exponential λ = 1.0</td><td class="n">0.769</td><td class="n">8.52</td><td class="n">−7.759 ± 0.092</td><td class="n">−0.022 ± 0.132</td><td class="n">1.02 : 1 — parity</td></tr>
+      <tr><td><span class="dot" style="background:var(--green)"></span>exponential λ = 2.0</td><td class="n">0.740</td><td class="n">9.20</td><td class="n">−8.466 ± 0.100</td><td class="n">−0.729 ± 0.137</td><td class="n">2.07 : 1 ΛCDM</td></tr>
+      <tr><td><span class="dot" style="background:var(--violet)"></span>uniform [1, 3]</td><td class="n">0.741</td><td class="n">8.81</td><td class="n">−8.075 ± 0.099</td><td class="n">−0.340 ± 0.135</td><td class="n">1.40 : 1 ΛCDM</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>Three things to make of this:</p>
+  <ul>
+    <li><b>All four are |Δ ln Z| &lt; 1</b> — inconclusive on the Jeffreys scale. The sign changes with the prior.</li>
+    <li><b>⟨ln L⟩ is flat to 0.04 nats.</b> Since ln Z = ⟨ln L⟩ − D<sub>KL</sub>, the entire 0.94-nat spread is the Occam term. Between λ = 0.5 and λ = 2, Δln Z = −0.94 and ΔD<sub>KL</sub> = +0.95 — they agree to 0.01. Widening the prior did not make TorC fit worse; it made the posterior harder to locate.</li>
+    <li><b>Width is not the whole story.</b> The uniform prior sits <em>below</em> both exponentials that bracket it in width. What costs evidence is prior–posterior mismatch, not prior width.</li>
+  </ul>
+
+  <p>The posterior on ς is robust (1.28–1.42 across a 4× change in prior width); the evidence is not. Quote ς with confidence; do not quote a single Bayes factor.</p>
+</section>
+
+<!-- ================= 5 ================= -->
+<section>
+  <div class="shead"><span class="sn">§5</span><h2>Figures</h2><span class="snote">PDFs in TorC/plots/</span></div>
+
+  <div class="fig"><span class="fn">scaling_symmetry.tex</span><span class="fd">§1 — the derivation itself, 6 pages, in <code>Stigma/latex/</code></span></div>
+  <div class="fig"><span class="fn">mups2_gauge.pdf</span><span class="fd">§1 — a(τ) differs with υ₂; a(σ) collapses; E(z) untouched over nine decades in 1+z</span></div>
+  <div class="fig"><span class="fn">work_precision.pdf</span><span class="fd">§2 — runtime vs achieved error across solvers and tolerances</span></div>
+  <div class="fig"><span class="fn">solver_speed_comparison.pdf</span><span class="fd">§2 — all ~20 backends at matched problem and output grid</span></div>
+  <div class="fig"><span class="fn">julia_vs_diffrax_corner.pdf</span><span class="fd">§2 — backends give the same posterior (marginals within 0.06σ)</span></div>
+  <div class="fig"><span class="fn">wedge_explained.pdf</span><span class="fd">§3 — the χ² surface is a wedge before any prior enters; posterior sits in it</span></div>
+  <div class="fig"><span class="fn">torc_fgivenx_1000.pdf</span><span class="fd">§3 — functional posterior on E(z) against the data</span></div>
+  <div class="fig"><span class="fn">torc_vs_lcdm_1000live_corner.pdf</span><span class="fd">§3 — TorC and ΛCDM posteriors overlaid</span></div>
+  <div class="fig"><span class="fn">prior_sensitivity.pdf</span><span class="fd">§4 — <b>the money figure.</b> Four priors, four posteriors, ln Z vs prior</span></div>
+  <div class="fig"><span class="fn">torc_prior_posterior_exp_lam{0p5,1,2}.pdf</span><span class="fd">§4 — prior vs posterior corners, one per λ</span></div>
+</section>
+
+<!-- ================= 6 ================= -->
+<section>
+  <div class="shead"><span class="sn">§6</span><h2>Before this goes out</h2><span class="snote">honest gaps</span></div>
+
+  <ul class="gaps">
+    <li><span class="chip c-gap">claim</span><span class="g"><b>υ₂ becoming physical at perturbation level is unverified.</b> Both <code>priors.py</code> and <code>scaling_symmetry.tex</code> §4 state it as established. A comoving k does not obviously break the degeneracy — the sound horizon and D<sub>M</sub> both pick up √υ₂, so D<sub>M</sub>/r<sub>d</sub> stays invariant. Either derive it or label it a conjecture.</span></li>
+    <li><span class="chip c-gap">transcription</span><span class="g"><b>Check §1 of the .tex against your source.</b> I transcribed the Lagrangian and Friedmann equation from screenshots. Everything downstream follows from rate-counting, so a slip would not invalidate the argument — but it would be wrong in print.</span></li>
+    <li><span class="chip c-warn">stats</span><span class="g"><b>One seed per prior.</b> Run-to-run scatter is not measured at 1000 live. Two or three seeds on one configuration would let you quote it.</span></li>
+    <li><span class="chip c-warn">stats</span><span class="g"><b>num_delete = 100 (10% of live) is unvalidated for ln Z bias.</b> Flagged earlier and never resolved.</span></li>
+    <li><span class="chip c-warn">prior</span><span class="g"><b>Ω<sub>Λ</sub> hits its prior ceiling.</b> 7.3% of posterior mass within 0.05 of 1.5, so that boundary contributes its own Occam penalty to every TorC ln Z. Worth one run with a wider Ω<sub>Λ</sub> prior to separate it from the ς effect.</span></li>
+    <li><span class="chip c-warn">scope</span><span class="g"><b>BAO only.</b> No SNe, no CMB. The ς constraint is 19% from BAO alone; adding datasets is the obvious way to make the comparison conclusive rather than prior-dominated.</span></li>
+    <li><span class="chip c-warn">defn</span><span class="g"><b>Settle what "matter fraction" means in TorC</b> before printing 0.2216. The denominator excludes the ϖ contribution, and the Friedmann equation carries a (ϖ²−4ς) prefactor.</span></li>
+  </ul>
+</section>
+
+<!-- ================= 7 ================= -->
+<section>
+  <div class="shead"><span class="sn">§7</span><h2>Reproducing it</h2></div>
+  <div class="tw"><table>
+    <thead><tr><th>Purpose</th><th>Command</th></tr></thead>
+    <tbody>
+      <tr><td>Production run</td><td class="n">caffeinate -ims python scripts/run_ns_julia_1000.py</td></tr>
+      <tr><td>Prior comparison figure</td><td class="n">python scripts/plot_prior_sensitivity.py</td></tr>
+      <tr><td>Prior vs posterior corners</td><td class="n">python scripts/plot_exponential_prior_posterior.py</td></tr>
+      <tr><td>Wedge explanation</td><td class="n">python scripts/plot_wedge_explained.py</td></tr>
+      <tr><td>υ₂ gauge derivation</td><td class="n">python scripts/explain_mups2_gauge.py</td></tr>
+      <tr><td>Tests (8, all passing)</td><td class="n">python -m pytest tests/ -q</td></tr>
+    </tbody>
+  </table></div>
+  <p>The prior is selected in <code>torc/priors.py</code> via <code>STIGMA_PRIOR</code> and <code>STIGMA_LAMBDA</code>; the run script tags its output filename by both, so variants cannot overwrite each other. <b>It currently sits at λ = 1.0</b> from the last run.</p>
+</section>
+
+<footer>Chains: lcdm_ns_1000 · torc_ns_julia_1000 · _exponential_lam0p5 · _lam1 · _lam2 — all 1000 live, 820–1180 s each on the Julia backend.</footer>
+
+</div>
