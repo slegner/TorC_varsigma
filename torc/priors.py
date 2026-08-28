@@ -69,19 +69,32 @@ from .likelihood import loglikelihood, MUPS2_FIXED
 
 SAMPLE_MUPS2 = False
 
-STIGMA_PRIOR = "exponential"      # "exponential" | "uniform"
-STIGMA_LAMBDA = 2.0               # decay scale of the exponential
+STIGMA_PRIOR = "powerlaw"         # "powerlaw" | "exponential" | "uniform"
+STIGMA_LAMBDA = 1.0               # decay scale of the exponential
 STIGMA_FLOOR = 1.0001             # s = 1 exactly is singular
-STIGMA_MAX = 50.0                 # solver guard; prior mass above ~ 2e-11
+STIGMA_MAX = 1.0e4                # solver guard; see note on truncation below
 STIGMA_UNIFORM_MAX = 3.0          # only used when STIGMA_PRIOR == "uniform"
 
-_STIGMA_HI = STIGMA_MAX if STIGMA_PRIOR == "exponential" else STIGMA_UNIFORM_MAX
+# Only the "uniform" prior has a genuine wall; the exponential and the power
+# law are both defined out to STIGMA_MAX and their sampling bounds must match
+# their support.  The powerlaw branch used to fall through to
+# STIGMA_UNIFORM_MAX = 3, which made loglikelihood_bounded floor everything
+# above 3 at -1e30: in chains/torc_ns_julia_1000_powerlaw.npz that is 2.6% of
+# the dead points (max stigma 1668), so that chain's ln Z = -8.0264 carries an
+# unintended truncation penalty and is NOT comparable to runs made after this
+# fix.  Solves were re-verified finite and well behaved over the whole range
+# stigma in [1.0001, 1e4] (E(z=1) -> 2.0 smoothly), so there is nothing to
+# guard against here.
+_STIGMA_HI = STIGMA_UNIFORM_MAX if STIGMA_PRIOR == "uniform" else STIGMA_MAX
 
 # normalisation of the TRUNCATED exponential on [STIGMA_FLOOR, STIGMA_MAX]:
 #   int pi = lam * (1 - exp(-(hi - lo)/lam))
 # the bracket is 1 - 2e-11, but carry it so the density integrates to 1 exactly
 _STIGMA_NORM = STIGMA_LAMBDA * (
     1.0 - np.exp(-(STIGMA_MAX - STIGMA_FLOOR) / STIGMA_LAMBDA))
+
+# power law: int_{s0}^{smax} s^-2 ds = 1/s0 - 1/smax
+_PL_NORM = 1.0 / STIGMA_FLOOR - 1.0 / STIGMA_MAX
 
 _ALL_BOUNDS = {
     "omega_m": (0.01,   0.99),
@@ -101,6 +114,10 @@ _SAFE = {k: v for k, v in
 
 def _logprior_stigma(s):
     """log pi(stigma), normalised over [STIGMA_FLOOR, _STIGMA_HI]."""
+    if STIGMA_PRIOR == "powerlaw":
+        inside = (s >= STIGMA_FLOOR) & (s <= STIGMA_MAX)
+        lp = -2.0 * jnp.log(jnp.where(inside, s, 1.0)) - jnp.log(_PL_NORM)
+        return jnp.where(inside, lp, -jnp.inf)
     if STIGMA_PRIOR == "uniform":
         return jax.scipy.stats.uniform.logpdf(
             s, STIGMA_FLOOR, _STIGMA_HI - STIGMA_FLOOR)
@@ -110,7 +127,13 @@ def _logprior_stigma(s):
 
 
 def _sample_stigma(key, n):
-    """Exact inverse-CDF draw from the truncated exponential."""
+    """Exact inverse-CDF draw from the prior."""
+    if STIGMA_PRIOR == "powerlaw":
+        # CDF(s) = (1/s0 - 1/s) / (1/s0 - 1/smax)
+        #   =>  s = 1 / (1/s0 - u * (1/s0 - 1/smax))
+        u = jax.random.uniform(key, (n,))
+        s = 1.0 / (1.0 / STIGMA_FLOOR - u * _PL_NORM)
+        return jnp.clip(s, STIGMA_FLOOR, STIGMA_MAX)
     if STIGMA_PRIOR == "uniform":
         return jax.random.uniform(key, (n,), minval=STIGMA_FLOOR,
                                   maxval=_STIGMA_HI)

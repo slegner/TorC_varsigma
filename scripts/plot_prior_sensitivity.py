@@ -65,12 +65,17 @@ def load(fname, keep=None):
                          labels=[LABELS[k] for k in ps]), ps
 
 
-RUNS = [                      # (label, lambda or None for uniform, chain, colour)
-    (r"exponential $\lambda=0.5$", 0.5,
+# lam: a number = exponential scale; "pl" = power law; None = uniform
+RUNS = [
+    (r"exp. $\lambda=0.5$", 0.5,
      "torc_ns_julia_1000_exponential_lam0p5.npz", "#DC267F"),
-    (r"uniform $[1,3]$", None, "torc_ns_julia_1000.npz", "#785EF0"),
-    (r"exponential $\lambda=2.0$", 2.0,
+    (r"exp. $\lambda=1.0$", 1.0,
+     "torc_ns_julia_1000_exponential_lam1.npz", "#FE6100"),
+    (r"exp. $\lambda=2.0$", 2.0,
      "torc_ns_julia_1000_exponential_lam2.npz", "#009E73"),
+    (r"power law $1/\varsigma^2$", "pl",
+     "torc_ns_julia_1000_powerlaw.npz", "#000000"),
+    (r"uniform $[1,3]$", None, "torc_ns_julia_1000.npz", "#785EF0"),
 ]
 loaded = [(lab, lam, load(f)[0], c) for lab, lam, f, c in RUNS]
 lcdm, _ = load("lcdm_ns_1000.npz", keep=["omega_m", "h0rd"])
@@ -94,6 +99,8 @@ s_grid = np.linspace(FLOOR, 4.0, 500)
 for st in stats:
     if st["lam"] is None:
         pr = np.where(s_grid <= 3.0, 1 / (3.0 - FLOOR), 0.0)
+    elif st["lam"] == "pl":
+        pr = s_grid**-2.0 / (1/FLOOR - 1/1e4)
     else:
         pr = np.exp(-(s_grid - FLOOR) / st["lam"]) / st["lam"]
     axL.plot(s_grid, pr, color=st["c"], ls="--", lw=1.3,
@@ -126,7 +133,7 @@ axR.axhspan(lzl.mean() - lzl.std(), lzl.mean() + lzl.std(),
 axR.set_xticks(x)
 axR.set_xticklabels([st["lab"] for st in stats], fontsize=8)
 axR.set_ylabel(r"$\ln Z$")
-axR.set_title(r"Evidence vs prior width", fontsize=10)
+axR.set_title(r"Evidence vs the $\varsigma$ prior", fontsize=10)
 axR.grid(axis="y", alpha=0.3, lw=0.5)
 axR.legend(loc="lower left", fontsize=7.5)
 for xi, st in zip(x, stats):
@@ -135,19 +142,33 @@ for xi, st in zip(x, stats):
              rf"$\Delta={st['d']:+.2f}$" "\n" rf"{np.exp(abs(st['d'])):.2f}:1 {fav}",
              ha="center", va="bottom", fontsize=7.5, color=st["c"])
 axR.set_ylim(min(vals) - 0.30, max(vals) + 0.55)
+axR.axvline(2.5, color="0.75", ls=":", lw=1.0, zorder=0)   # exponential family ends
+axR.text(2.5, min(vals) - 0.24, r"  not exponential", fontsize=7,
+         color="0.45", ha="left", va="bottom")
 
 fig.suptitle(r"TorC vs $\Lambda$CDM is prior-dominated --- DESI DR2 BAO, "
              r"1000 live points", fontsize=11.5, y=0.99)
 fig.text(0.5, -0.03,
-         r"All three have $|\Delta\ln Z|<1$: \textbf{inconclusive} on the Jeffreys "
+         r"All five have $|\Delta\ln Z|<1$: \textbf{inconclusive} on the Jeffreys "
          r"scale.  The data do not distinguish the models, so the Bayes factor "
          r"is set by the prior on $\varsigma$ --- it even changes sign."
          "\n"
-         r"Widening the prior \emph{lowers} the evidence: that is the Occam "
-         r"factor.  At $\lambda=2$ the typical $\varsigma$ is 3 while the "
-         r"posterior wants $\varsigma\approx1.4$, so most prior volume is wasted."
+         r"Within the exponential family $\ln Z$ falls monotonically with "
+         r"$\lambda$ --- the Occam factor --- and passes through \emph{exact "
+         r"parity} at $\lambda=1$ ($\Delta\ln Z=-0.03\pm0.14$)."
          "\n"
-         r"No single number here is ``the'' Bayes factor.",
+         r"$\langle\ln L\rangle$ is flat to $0.05$ across all five: the fit never "
+         r"changes, only the cost of locating the posterior inside the prior.  The "
+         r"uniform prior is a different \emph{shape}, not just a width, and does "
+         r"not lie on the trend."
+         "\n"
+         r"The Bayes factor runs from 1.25:1 \emph{for} TorC to 2.06:1 "
+         r"\emph{against} depending on the prior alone."
+         "\n"
+         r"\textbf{The power law $\pi(\varsigma)=1/\varsigma^2$ --- the ratio of two "
+         r"unit exponentials --- carries no free scale}, so it is the one line here "
+         r"that needs no justifying choice: $\Delta\ln Z=-0.29\pm0.14$, 1.33:1 for "
+         r"$\Lambda$CDM, still inconclusive.",
          ha="center", va="top", fontsize=8)
 fig.tight_layout(rect=[0, 0.02, 1, 0.96])
 

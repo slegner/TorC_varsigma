@@ -39,10 +39,18 @@ SEED = 0
 from torc.priors import STIGMA_PRIOR, STIGMA_LAMBDA
 # separate filename per prior, so the uniform-prior chain survives
 # tag by prior AND width, so lambda variants do not clobber each other
-_TAG = ("" if STIGMA_PRIOR == "uniform"
-        else f"_{STIGMA_PRIOR}_lam{STIGMA_LAMBDA:g}".replace(".", "p"))
+# lambda is only meaningful for the exponential; the power law is parameter-free
+if STIGMA_PRIOR == "uniform":
+    _TAG = ""
+elif STIGMA_PRIOR == "powerlaw":
+    _TAG = "_powerlaw"
+else:
+    _TAG = f"_{STIGMA_PRIOR}_lam{STIGMA_LAMBDA:g}".replace(".", "p")
+# optional extra tag, e.g. TORC_TAG=_nostigmawall, so a re-run under changed
+# prior bounds cannot overwrite an earlier chain made under the old ones
+_SUFFIX = os.environ.get("TORC_TAG", "")
 OUT = os.path.join(HERE, "..", "chains",
-                   f"torc_ns_julia_1000{_TAG}.npz")
+                   f"torc_ns_julia_1000{_TAG}{_SUFFIX}.npz")
 
 if __name__ == "__main__":
     print(f"ndim={len(PRIOR_BOUNDS)} ({', '.join(PRIOR_BOUNDS)})")
