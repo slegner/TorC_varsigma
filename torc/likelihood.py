@@ -23,6 +23,11 @@ from .theory import rhopsol_jax, OMEGA_R_DEFAULT
 C_KMS  = 299792.458
 OMEGAR = OMEGA_R_DEFAULT          # 8.24e-5, as everywhere in distances/
 
+# mups2 is an exact background gauge parameter (see torc/priors.py); runs
+# with SAMPLE_MUPS2 = False omit it from the parameter dict entirely, so
+# loglikelihood supplies this value when the key is absent.
+MUPS2_FIXED = 4.0 / 3.0
+
 # ---------------------------------------------------------------------------
 # Data (host side, once, at import).  Vendored in the repo at data/desidr2;
 # override with $DESIDR2_DIR.
@@ -74,9 +79,10 @@ def model_vector(omega_m, h0rd, stigma, mups2, OmL):
 
 
 def loglikelihood(params):
-    """params: dict with keys 'omega_m', 'h0rd', 'stigma', 'mups2', 'OmL'."""
-    pred = model_vector(params["omega_m"], params["h0rd"],
-                        params["stigma"],  params["mups2"], params["OmL"])
+    """params: dict with keys 'omega_m', 'h0rd', 'stigma', 'OmL' and
+    optionally 'mups2' (defaults to MUPS2_FIXED when absent)."""
+    pred = model_vector(params["omega_m"], params["h0rd"], params["stigma"],
+                        params.get("mups2", MUPS2_FIXED), params["OmL"])
     r    = DATA - pred
     chi2 = r @ COV_INV @ r
     logl = -0.5 * chi2 + LOGL_NORM

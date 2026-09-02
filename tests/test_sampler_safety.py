@@ -46,7 +46,8 @@ def test_out_of_bounds():
     cols = {n: rng.uniform(lo, hi, 64) for n, (lo, hi) in PRIOR_BOUNDS.items()}
     cols["omega_m"][:16] = rng.uniform(-0.5, 0.0, 16)     # below the box
     cols["stigma"][16:32] = rng.uniform(0.0, 1.0, 16)     # singular region
-    cols["mups2"][32:48] = rng.uniform(-1.0, 0.4, 16)     # negative kinetic
+    if "mups2" in cols:                                   # only when sampled
+        cols["mups2"][32:48] = rng.uniform(-1.0, 0.4, 16)  # negative kinetic
     cols["OmL"][48:] = rng.uniform(1.6, 2.5, 16)          # above the box
     out = _batched(loglikelihood_bounded, cols)
     assert np.all(np.isfinite(out))

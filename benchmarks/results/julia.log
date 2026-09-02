@@ -1,0 +1,62 @@
+┌ Warning: Verbosity toggle: max_iters 
+│  Interrupted. Larger maxiters is needed. If you are using an integrator for non-stiff ODEs or an automatic switching algorithm (the default), you may want to consider using a method for stiff equations. See the solver pages for more details (e.g. https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/#Stiff-Problems).
+└ @ SciMLBase ~/.julia/packages/SciMLBase/jqoB3/src/integrator_interface.jl:967
+case	solver	tol	ms	nf	maxrelerr
+fiducial	jl Tsit5	1e-05	0.153	501	1.896e-06
+fiducial	jl Vern8	1e-05	0.425	405	1.594e-07
+fiducial	jl Vern9	1e-05	0.318	658	2.769e-09
+fiducial	jl Rodas5P [stiff]	1e-05	0.701	1462	2.084e-06
+fiducial	jl CVODE_Adams	1e-05	0.632	539	2.134e-03
+fiducial	jl CVODE_BDF [stiff]	1e-05	0.739	411	7.118e-03
+fiducial	jl ARKODE	1e-05	1.558	0	3.415e-05
+fiducial	jl Tsit5	1e-08	0.423	1845	9.435e-10
+fiducial	jl Vern8	1e-08	0.640	1081	6.879e-10
+fiducial	jl Vern9	1e-08	0.533	1330	6.277e-10
+fiducial	jl Rodas5P [stiff]	1e-08	2.512	5798	1.564e-09
+fiducial	jl CVODE_Adams	1e-08	1.876	2433	9.102e-05
+fiducial	jl CVODE_BDF [stiff]	1e-08	1.076	745	4.358e-05
+fiducial	jl ARKODE	1e-08	6.054	0	3.346e-08
+slow ridge	jl Tsit5	1e-05	0.203	543	1.674e-06
+slow ridge	jl Vern8	1e-05	0.465	457	9.264e-08
+slow ridge	jl Vern9	1e-05	0.387	690	4.305e-09
+slow ridge	jl Rodas5P [stiff]	1e-05	0.839	1558	1.269e-06
+slow ridge	jl CVODE_Adams	1e-05	0.787	612	3.002e-03
+slow ridge	jl CVODE_BDF [stiff]	1e-05	0.741	452	1.233e-02
+slow ridge	jl ARKODE	1e-05	2.098	0	2.985e-05
+slow ridge	jl Tsit5	1e-08	0.498	1995	2.724e-09
+slow ridge	jl Vern8	1e-08	0.803	1237	9.473e-10
+slow ridge	jl Vern9	1e-08	0.636	1442	2.282e-09
+slow ridge	jl Rodas5P [stiff]	1e-08	2.626	6102	2.492e-09
+slow ridge	jl CVODE_Adams	1e-08	1.657	2277	1.001e-04
+slow ridge	jl CVODE_BDF [stiff]	1e-08	0.913	710	5.081e-05
+slow ridge	jl ARKODE	1e-08	6.147	0	3.171e-08
+stigma low	jl Tsit5	1e-05	0.170	417	1.003e+73
+stigma low	jl Vern8	1e-05	0.506	626	1.013e+73
+stigma low	jl Vern9	1e-05	0.350	626	1.002e+73
+stigma low	jl Rodas5P [stiff]	1e-05	0.561	1134	1.002e+73
+stigma low	jl CVODE_Adams	1e-05	0.591	246	1.001e+73
+stigma low	jl CVODE_BDF [stiff]	1e-05	0.569	237	9.996e+72
+stigma low	jl ARKODE	1e-05	1.660	0	1.002e+73
+stigma low	jl Tsit5	1e-08	0.422	1743	1.002e+73
+stigma low	jl Vern8	1e-08	27.709	143899	1.002e+73
+stigma low	jl Vern9	1e-08	4.792	25570	1.002e+73
+stigma low	jl Rodas5P [stiff]	1e-08	1.801	4242	1.002e+73
+stigma low	jl CVODE_Adams	1e-08	0.856	490	1.002e+73
+stigma low	jl CVODE_BDF [stiff]	1e-08	1.014	533	1.002e+73
+stigma low	jl ARKODE	1e-08	5.176	0	1.002e+73
+stigma high	jl Tsit5	1e-05	0.189	489	1.539e-06
+stigma high	jl Vern8	1e-05	0.435	418	1.225e-07
+stigma high	jl Vern9	1e-05	0.353	642	4.496e-09
+stigma high	jl Rodas5P [stiff]	1e-05	0.733	1562	3.109e-06
+stigma high	jl CVODE_Adams	1e-05	0.894	673	5.015e-03
+stigma high	jl CVODE_BDF [stiff]	1e-05	1.019	302	6.535e-03
+stigma high	jl ARKODE	1e-05	1.867	0	3.488e-05
+stigma high	jl Tsit5	1e-08	0.416	1761	1.861e-09
+stigma high	jl Vern8	1e-08	0.640	1029	2.102e-09
+stigma high	jl Vern9	1e-08	0.563	1266	2.168e-09
+stigma high	jl Rodas5P [stiff]	1e-08	2.604	6282	1.748e-09
+stigma high	jl CVODE_Adams	1e-08	2.386	2730	1.627e-04
+stigma high	jl CVODE_BDF [stiff]	1e-08	1.022	570	3.501e-05
+stigma high	jl ARKODE	1e-08	6.750	0	3.842e-08
+wrote julia_E.tsv
+JULIA BENCHMARK DONE

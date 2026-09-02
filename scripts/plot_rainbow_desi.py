@@ -182,13 +182,25 @@ def run_theory(stigma, mups2, omega_m, OmL, h0rd):
     return dv_res, dm_res, w_interp(z_plot)
 
 
+def _legend_left_of_yaxis(fig, ax, gap_inches=0.10, **kw):
+    """Legend just outside the axes on the left, a fixed gap clear of the
+    y-axis label.  Anchoring to the drawn extent of the y-axis (rather than a
+    fixed axes fraction) keeps the spacing identical whether the tick labels
+    are "0.1" or "18000".  Call after the colourbar, which shifts the axes."""
+    fig.canvas.draw()
+    bb = ax.yaxis.get_tightbbox(fig.canvas.get_renderer())
+    x_ax = (ax.transAxes.inverted().transform((bb.x0 - gap_inches * fig.dpi, 0))[0]
+            if bb is not None else -0.18)
+    return ax.legend(loc='center right', bbox_to_anchor=(x_ax, 0.5), **kw)
+
+
 def make_rainbow(param_name, param_values):
     norm = Normalize(vmin=param_values.min(), vmax=param_values.max())
     sm   = ScalarMappable(cmap=CUSTOM_CMAP, norm=norm)
     sm.set_array([])
 
-    fig, axes = plt.subplots(3, 1, figsize=(6, 10), sharex=True)
-    ax_dv, ax_dm, ax_w = axes
+    fig, axes = plt.subplots(2, 1, figsize=(7.5, 6.5), sharex=True)
+    ax_dv, ax_dm = axes
     for ax in axes:
         ax.axhline(0, color='k', linestyle='--', linewidth=0.8)
 
@@ -207,9 +219,6 @@ def make_rainbow(param_name, param_values):
         ax_dm.errorbar(a, res, yerr=err, marker='+', markersize=7,
                        linewidth=1.2, color=color, label=label, capsize=0,
                        zorder=5)
-    for w in [-1, 0, 1/3]:
-        ax_w.axhline(w, color='grey', linestyle=':', linewidth=0.8)
-
     def theory_for(val):
         p = dict(FID); p[param_name] = val
         return run_theory(p["stigma"], p["mups2"], p["omega_m"], p["OmL"],
@@ -238,19 +247,17 @@ def make_rainbow(param_name, param_values):
     ax_dv.set(ylabel=r'$D_\mathrm{V}/(r_d z^{2/3}) - (D_\mathrm{V}/(r_d z^{2/3}))_{\Lambda\mathrm{CDM}}$',
               **(dict(ylim=(-1.5, 1.5)) if fixed_y else {}))
     ax_dm.set(ylabel=r'$D_\mathrm{M}/(z D_H) - (D_\mathrm{M}/(z D_H))_{\Lambda\mathrm{CDM}}$',
-              **(dict(ylim=(-0.25, 0.25)) if fixed_y else {}))
-    ax_w.set( ylabel=r'$w_\mathrm{DE} = P_\mathrm{DE}/\rho_\mathrm{DE}$',
-              **(dict(ylim=(-2, 0.5)) if fixed_y else {}), xlabel=r'$a$')
+              **(dict(ylim=(-0.25, 0.25)) if fixed_y else {}), xlabel=r'$a$')
     ax_dv.set_xlim(0, 1)
-    ax_dv.legend(fontsize=7)
-    ax_dm.legend(fontsize=7)
 
-    cbar = fig.colorbar(sm, ax=axes.tolist(), orientation='vertical',
-                        fraction=0.02, pad=0.02)
+    # Colourbar outside on the right, tracer legends outside on the left.
+    cbar = fig.colorbar(sm, ax=axes.tolist(), location='right',
+                        fraction=0.03, pad=0.02)
     cbar.set_label(CBAR_LABELS[param_name])
+    for ax in axes:
+        _legend_left_of_yaxis(fig, ax, fontsize=7, frameon=False)
 
     out = os.path.join(TORC, "plots", f"TorC_rainbow_noH0_{param_name}")
-    fig.tight_layout()
     fig.savefig(out + ".pdf", bbox_inches='tight')
     fig.savefig(out + ".png", bbox_inches='tight', dpi=200)
     print(f"Saved {out}.pdf", flush=True)

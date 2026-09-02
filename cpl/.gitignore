@@ -1,0 +1,4 @@
+output*/*.pkl
+output*/*.png
+output*/cache_*
+__pycache__/

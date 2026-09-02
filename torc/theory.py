@@ -34,6 +34,16 @@ verified numerically):
                           independent of it.  It is kept as an argument for
                           interface stability (and for future perturbation-
                           level observables) but does nothing here.
+                          WHY: mups2 multiplies every term quadratic in
+                          tau-derivatives in dda/ddcp but none of the
+                          matter/radiation/Lambda sources, so it is absorbed
+                          by tau = sqrt(mups2)*sigma; the series ICs scale
+                          the same way (tau_ini ~ sqrt(mups2), term n ~
+                          tau^n mups2^(-n/2)).  H then carries one common
+                          factor mups2^(-1/2) at every epoch, which cancels
+                          in the ratio E = H/H(a=1).  Derived and checked
+                          step by step in scripts/explain_mups2_gauge.py
+                          (-> plots/mups2_gauge.pdf).
 
 Solver: x = ln(a) is the integration variable.  Because today is the FIXED
 endpoint x = 0, the whole solve is ONE diffrax call on a static save grid —
@@ -203,8 +213,15 @@ def _vector_field_tau(t, y, args):
 
 _TERM_LNA = diffrax.ODETerm(_vector_field_lna)
 _TERM_TAU = diffrax.ODETerm(_vector_field_tau)
-_SOLVER   = diffrax.Tsit5()
-_CTRL     = diffrax.PIDController(rtol=1e-7, atol=1e-7)  # ~100x below DESI errors
+_SOLVER   = diffrax.Dopri8()
+_CTRL     = diffrax.PIDController(rtol=1e-8, atol=1e-8)
+# Benchmarked against Tsit5/Dopri5/Bosh3/Heun/Ralston, the Kvaerno+KenCarp
+# implicit family, and scipy RK45/RK23/DOP853/Radau/BDF/LSODA.  The system is
+# NOT stiff: implicit solvers cost 76-480x more and fail outright at 1e-8, so
+# an explicit high-order RK is right.  Dopri8 at 1e-8 needs ~72 steps/solve --
+# fewer than Tsit5 needed at 1e-5 (~68) for ~1000x better accuracy, at equal
+# or lower wall time.  Batch cost is set by the slowest vmap lane and by fixed
+# per-solve overhead, not by mean step count, so the in-sampler gain is ~12%.
 
 TAU_SPAN  = 10.0        # only used by the tau-based variant in noH0/
 
@@ -240,8 +257,10 @@ def rhopsol_jax(omega_m, omegar, OmL, stigma, mups2):
     sol = diffrax.diffeqsolve(
         _TERM_LNA, _SOLVER, t0=x0, t1=0.0, dt0=None, y0=y0, args=args,
         stepsize_controller=_CTRL, saveat=diffrax.SaveAt(ts=xs),
-        max_steps=8192,   # ample for good solves; caps the cost of FAILED ones
+        max_steps=1024,   # Dopri8@1e-8 good solves need ~72-105 steps (measured);
+                          # ~10x margin, and caps the cost of FAILED ones
         throw=False,      # failed solve -> inf/nan output, not a crash (sampler-safe)
+        adjoint=diffrax.ForwardMode(),  # forward-mode autodiff (few params); as in recfast
     )
     cp, da, dcp = sol.ys
 
